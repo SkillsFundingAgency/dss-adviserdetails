@@ -10,8 +10,9 @@ namespace NCS.DSS.AdviserDetail.PutAdviserDetailHttpTrigger
 {
     public static class PutAdviserDetailHttpTrigger
     {
+        [Disable]
         [FunctionName("Put")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "AdviserDetails/{adviserDetailId:guid}")]HttpRequestMessage req, TraceWriter log, string adviserDetailId)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "AdviserDetails/{adviserDetailId}")]HttpRequestMessage req, TraceWriter log, string adviserDetailId)
         {
             log.Info("Put Adviser Detail C# HTTP trigger function processed a request.");
 

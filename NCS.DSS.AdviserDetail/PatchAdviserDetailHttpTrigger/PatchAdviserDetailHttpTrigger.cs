@@ -1,6 +1,8 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
+using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -11,7 +13,9 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger
     public static class PatchAdviserDetailHttpTrigger
     {
         [FunctionName("Patch")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "AdviserDetails/{adviserDetailId:guid}")]HttpRequestMessage req, TraceWriter log, string adviserDetailId)
+        [ResponseType(typeof(Models.AdviserDetail))]
+        [Display(Name = "Patch", Description = "Ability to modify/update an adviser details record.")]
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "AdviserDetails/{adviserDetailId}")]HttpRequestMessage req, TraceWriter log, string adviserDetailId)
         {
             log.Info("Patch Adviser Detail C# HTTP trigger function processed a request.");
 

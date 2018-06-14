@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger
     {
         [FunctionName("Post")]
         [ResponseType(typeof(Models.AdviserDetail))]
+        [Display(Name = "Post", Description = "Ability to create a new adviser details resource.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "AdviserDetails")]HttpRequestMessage req, TraceWriter log)
         {
             log.Info("Post Adviser Detail C# HTTP trigger function processed a request.");

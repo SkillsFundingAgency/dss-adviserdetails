@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
 using Microsoft.Azure.WebJobs;
@@ -11,7 +12,8 @@ namespace NCS.DSS.AdviserDetail.DeleteAdviserDetailHttpTrigger
     public static class DeleteAdviserDetailHttpTrigger
     {
         [FunctionName("Delete")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "AdviserDetails/{adviserDetailId:guid}")]HttpRequestMessage req, TraceWriter log, string adviserDetailId)
+        [Display(Name = "Delete", Description = "Ability to delete an adviser details record.")]
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "AdviserDetails/{adviserDetailId}")]HttpRequestMessage req, TraceWriter log, string adviserDetailId)
         {
             log.Info("Delete Adviser Detail C# HTTP trigger function processed a request.");
 
