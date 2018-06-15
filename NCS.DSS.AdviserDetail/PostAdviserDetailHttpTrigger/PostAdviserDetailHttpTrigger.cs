@@ -6,6 +6,7 @@ using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using NCS.DSS.AdviserDetail.Annotations;
 
 namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger
 {
@@ -13,6 +14,9 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger
     {
         [FunctionName("Post")]
         [ResponseType(typeof(Models.AdviserDetail))]
+        [AdviserDetailResponse(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Adviser Detail Created", ShowSchema = true)]
+        [AdviserDetailResponse(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Unable to create Adviser Detail", ShowSchema = false)]
+        [AdviserDetailResponse(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Forbidden", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new adviser details resource.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "AdviserDetails")]HttpRequestMessage req, TraceWriter log)
         {

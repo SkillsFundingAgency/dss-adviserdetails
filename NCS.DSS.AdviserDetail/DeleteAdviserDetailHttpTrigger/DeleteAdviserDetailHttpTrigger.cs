@@ -5,6 +5,7 @@ using System.Net.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using NCS.DSS.AdviserDetail.Annotations;
 using Newtonsoft.Json;
 
 namespace NCS.DSS.AdviserDetail.DeleteAdviserDetailHttpTrigger
@@ -12,6 +13,8 @@ namespace NCS.DSS.AdviserDetail.DeleteAdviserDetailHttpTrigger
     public static class DeleteAdviserDetailHttpTrigger
     {
         [FunctionName("Delete")]
+        [AdviserDetailResponse(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Adviser Detail Deleted", ShowSchema = true)]
+        [AdviserDetailResponse(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Supplied Adviser Detail Id does not exist", ShowSchema = false)]
         [Display(Name = "Delete", Description = "Ability to delete an adviser details record.")]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "AdviserDetails/{adviserDetailId}")]HttpRequestMessage req, TraceWriter log, string adviserDetailId)
         {

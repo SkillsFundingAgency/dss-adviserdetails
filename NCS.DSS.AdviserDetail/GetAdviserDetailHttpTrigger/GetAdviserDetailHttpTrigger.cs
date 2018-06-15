@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
+using NCS.DSS.AdviserDetail.Annotations;
 
 namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger
 {
@@ -14,6 +15,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger
     {
         [FunctionName("Get")]
         [ResponseType(typeof(Models.AdviserDetail))]
+        [AdviserDetailResponse(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Adviser Details found", ShowSchema = true)]
         [Display(Name = "Get", Description = "Ability to return the adviser details for a given interaction.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "AdviserDetails")]HttpRequestMessage req, TraceWriter log)
         {

@@ -14,6 +14,7 @@ using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using NCS.DSS.AdviserDetail.Annotations;
 
 namespace NCS.DSS.AdviserDetail.APIDefinition
 {
@@ -241,8 +242,21 @@ namespace NCS.DSS.AdviserDetail.APIDefinition
                     }
                 }
             }
-            responseDef.description = "OK";
-            AddToExpando(responses, "200", responseDef);
+
+            // automatically get data(http code, description and show schema) from the new custom response class
+            var responseCodes = methodInfo.GetCustomAttributes(typeof(AdviserDetailResponse), false);
+
+            foreach (var response in responseCodes)
+            {
+                var adviserDetailResponse = (AdviserDetailResponse)response;
+
+                if (!adviserDetailResponse.ShowSchema)
+                    responseDef = new ExpandoObject();
+
+                responseDef.description = adviserDetailResponse.Description;
+                AddToExpando(responses, adviserDetailResponse.HttpStatusCode.ToString(), responseDef);
+            }
+
             return responses;
         }
 
