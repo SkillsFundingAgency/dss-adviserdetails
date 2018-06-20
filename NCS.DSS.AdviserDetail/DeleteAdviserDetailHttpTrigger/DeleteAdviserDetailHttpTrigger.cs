@@ -12,6 +12,7 @@ namespace NCS.DSS.AdviserDetail.DeleteAdviserDetailHttpTrigger
 {
     public static class DeleteAdviserDetailHttpTrigger
     {
+        [Disable]
         [FunctionName("Delete")]
         [AdviserDetailResponse(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Adviser Detail Deleted", ShowSchema = true)]
         [AdviserDetailResponse(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Supplied Adviser Detail Id does not exist", ShowSchema = false)]
