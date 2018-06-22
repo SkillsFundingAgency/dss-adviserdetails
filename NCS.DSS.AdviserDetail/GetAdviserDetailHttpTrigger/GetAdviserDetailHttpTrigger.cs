@@ -15,7 +15,11 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger
     {
         [FunctionName("Get")]
         [ResponseType(typeof(Models.AdviserDetail))]
-        [AdviserDetailResponse(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Adviser Details found", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Adviser Details found", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Adviser Details do not exist", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to return the adviser details for a given interaction.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "AdviserDetails")]HttpRequestMessage req, TraceWriter log)
         {

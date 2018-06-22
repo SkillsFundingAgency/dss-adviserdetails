@@ -245,11 +245,11 @@ namespace NCS.DSS.AdviserDetail.APIDefinition
             }
 
             // automatically get data(http code, description and show schema) from the new custom response class
-            var responseCodes = methodInfo.GetCustomAttributes(typeof(AdviserDetailResponse), false);
+            var responseCodes = methodInfo.GetCustomAttributes(typeof(Response), false);
 
             foreach (var response in responseCodes)
             {
-                var adviserDetailResponse = (AdviserDetailResponse)response;
+                var adviserDetailResponse = (Response)response;
 
                 if (!adviserDetailResponse.ShowSchema)
                     responseDef = new ExpandoObject();

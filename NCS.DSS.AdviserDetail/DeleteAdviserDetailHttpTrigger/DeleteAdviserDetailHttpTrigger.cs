@@ -14,8 +14,8 @@ namespace NCS.DSS.AdviserDetail.DeleteAdviserDetailHttpTrigger
     {
         [Disable]
         [FunctionName("Delete")]
-        [AdviserDetailResponse(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Adviser Detail Deleted", ShowSchema = true)]
-        [AdviserDetailResponse(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Supplied Adviser Detail Id does not exist", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Adviser Detail Deleted", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Supplied Adviser Detail Id does not exist", ShowSchema = false)]
         [Display(Name = "Delete", Description = "Ability to delete an adviser details record.")]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "AdviserDetails/{adviserDetailId}")]HttpRequestMessage req, TraceWriter log, string adviserDetailId)
         {
