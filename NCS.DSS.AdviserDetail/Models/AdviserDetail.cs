@@ -6,7 +6,7 @@ namespace NCS.DSS.AdviserDetail.Models
 {
     public class AdviserDetail
     {
-        [Display(Description = "Unique identifier of the adviser involved in the interaction. ")]
+        [Display(Description = "Unique identifier of the adviser involved in the interaction.")]
         [Example(Description = "b8592ff8-af97-49ad-9fb2-e5c3c717fd85")]
         public Guid AdviserDetailId { get; set; }
 

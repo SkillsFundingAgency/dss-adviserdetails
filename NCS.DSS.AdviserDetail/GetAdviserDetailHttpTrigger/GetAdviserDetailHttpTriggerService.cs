@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger
@@ -10,6 +11,12 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger
         {
             var result = CreateTempAdviserDetails();
             return await Task.FromResult(result);
+        }
+
+        public async Task<List<Guid>> GetAdviserDetailIdsForCustomer(Guid customerId)
+        {
+            var listOfAdviserDetailIds = new List<Guid> {Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()};
+            return await Task.FromResult(listOfAdviserDetailIds);
         }
 
         public List<Models.AdviserDetail> CreateTempAdviserDetails()
@@ -47,6 +54,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger
 
             return adviserDetailList;
         }
+
 
     }
 }

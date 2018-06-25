@@ -15,7 +15,6 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger
     {
         [FunctionName("Patch")]
         [ResponseType(typeof(Models.AdviserDetail))]
-
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Adviser Detail Updated", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Adviser Detail does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
