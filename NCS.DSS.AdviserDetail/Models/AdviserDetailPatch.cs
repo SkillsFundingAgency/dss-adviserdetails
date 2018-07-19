@@ -4,13 +4,8 @@ using NCS.DSS.AdviserDetail.Annotations;
 
 namespace NCS.DSS.AdviserDetail.Models
 {
-    public class AdviserDetail
+    public class AdviserDetailPatch
     {
-        [Display(Description = "Unique identifier of the adviser involved in the interaction.")]
-        [Example(Description = "b8592ff8-af97-49ad-9fb2-e5c3c717fd85")]
-        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public Guid? AdviserDetailId { get; set; }
-
         [Required]
         [StringLength(100)]
         [Display(Description = "Name of the adviser")]
@@ -35,26 +30,5 @@ namespace NCS.DSS.AdviserDetail.Models
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
         [Example(Description = "d1307d77-af23-4cb4-b600-a60e04f8c3df")]
         public Guid? LastModifiedTouchpointId { get; set; }
-
-        public void Patch(AdviserDetailPatch adviserDetailPatch)
-        {
-            if (adviserDetailPatch == null)
-                return;
-
-            if(!string.IsNullOrEmpty(adviserDetailPatch.AdviserName))
-                AdviserName = adviserDetailPatch.AdviserName;
-
-            if (!string.IsNullOrEmpty(adviserDetailPatch.AdviserEmailAddress))
-                AdviserEmailAddress = adviserDetailPatch.AdviserEmailAddress;
-
-            if (!string.IsNullOrEmpty(adviserDetailPatch.AdviserContactNumber))
-                AdviserContactNumber = adviserDetailPatch.AdviserContactNumber;
-
-            if (adviserDetailPatch.LastModifiedDate.HasValue)
-                LastModifiedDate = adviserDetailPatch.LastModifiedDate;
-
-            if (adviserDetailPatch.LastModifiedTouchpointId.HasValue)
-                LastModifiedTouchpointId = adviserDetailPatch.LastModifiedTouchpointId;
-        }
     }
 }

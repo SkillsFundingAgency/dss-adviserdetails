@@ -1,12 +1,19 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.AdviserDetail.Annotations;
+using NCS.DSS.AdviserDetail.Cosmos.Helper;
+using NCS.DSS.AdviserDetail.Helpers;
+using NCS.DSS.AdviserDetail.Ioc;
+using NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service;
+using NCS.DSS.AdviserDetail.Validation;
 using Newtonsoft.Json;
 
 namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
@@ -22,23 +29,46 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Adviser Detail validation error(s)", ShowSchema = false)]
         [Display(Name = "Patch", Description = "Ability to modify/update an adviser details record.")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "AdviserDetails/{adviserDetailId}")]HttpRequestMessage req, TraceWriter log, string adviserDetailId)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "AdviserDetails/{adviserDetailId}")]HttpRequestMessage req, ILogger log, string adviserDetailId,
+            [Inject]IResourceHelper resourceHelper,
+            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
+            [Inject]IValidate validate,
+            [Inject]IPatchAdviserDetailHttpTriggerService adviserDetailsPatchService)
         {
-            log.Info("Patch Adviser Detail C# HTTP trigger function processed a request.");
+            log.LogInformation("Patch Adviser Detail C# HTTP trigger function processed a request.");
 
             if (!Guid.TryParse(adviserDetailId, out var adviserDetailGuid))
+                return HttpResponseMessageHelper.BadRequest(adviserDetailGuid);
+
+            Models.AdviserDetailPatch adviserDetailPatchRequest;
+
+            try
             {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent(JsonConvert.SerializeObject(adviserDetailId),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
+                adviserDetailPatchRequest = await httpRequestMessageHelper.GetAdviserDetailFromRequest<Models.AdviserDetailPatch>(req);
+            }
+            catch (JsonSerializationException ex)
+            {
+                return HttpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent("Updated Adviser Detail record with Id of : " + adviserDetailGuid)
-            };
+            if (adviserDetailPatchRequest == null)
+                return HttpResponseMessageHelper.UnprocessableEntity(req);
+
+            var errors = validate.ValidateResource(adviserDetailPatchRequest);
+
+            if (errors != null && errors.Any())
+                return HttpResponseMessageHelper.UnprocessableEntity(errors);
+
+            var adviserDetail = await adviserDetailsPatchService.GetAdviserDetailByIdAsync(adviserDetailGuid);
+
+            if (adviserDetail == null)
+                return HttpResponseMessageHelper.NoContent(adviserDetailGuid);
+            
+            var updatedAdviserDetail = await adviserDetailsPatchService.UpdateAsync(adviserDetail, adviserDetailPatchRequest);
+
+            return updatedAdviserDetail == null
+                ? HttpResponseMessageHelper.BadRequest(adviserDetailGuid)
+                : HttpResponseMessageHelper.Created(updatedAdviserDetail);
         }
     }
 }

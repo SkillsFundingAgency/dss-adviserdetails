@@ -7,8 +7,12 @@ using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.AdviserDetail.Annotations;
+using NCS.DSS.AdviserDetail.Cosmos.Helper;
 using NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Service;
+using NCS.DSS.AdviserDetail.Helpers;
+using NCS.DSS.AdviserDetail.Ioc;
 using Newtonsoft.Json;
 
 namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
@@ -23,34 +27,20 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to return the adviser details for a given interaction.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "AdviserDetails/{adviserDetailId}")]HttpRequestMessage req, TraceWriter log, string adviserDetailId)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "AdviserDetails/{adviserDetailId}")]HttpRequestMessage req, ILogger log, string adviserDetailId,
+            [Inject]IResourceHelper resourceHelper,
+            [Inject]IGetAdviserDetailByIdHttpTriggerService getAdviserDetailByIdService)
         {
-            log.Info("Get Adviser Detail By Id C# HTTP trigger function  processed a request.");
+            log.LogInformation("Get Adviser Detail By Id C# HTTP trigger function  processed a request.");
 
             if (!Guid.TryParse(adviserDetailId, out var adviserDetailGuid))
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent(JsonConvert.SerializeObject(adviserDetailId),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
+                return HttpResponseMessageHelper.BadRequest(adviserDetailGuid);
 
-            var adviserDetailService = new GetAdviserDetailByIdHttpTriggerService();
-            var adviserDetail = await adviserDetailService.GetAdviserDetail(adviserDetailGuid);
+            var adviserDetail = await getAdviserDetailByIdService.GetAdviserDetailByIdAsync(adviserDetailGuid);
 
-            if (adviserDetail == null)
-                return new HttpResponseMessage(HttpStatusCode.NotFound)
-                {
-                    Content = new StringContent(
-                        "Unable to find Adviser Detail record with Id of : " + adviserDetailGuid)
-                };
-
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(JsonConvert.SerializeObject(adviserDetail),
-                    System.Text.Encoding.UTF8, "application/json")
-            };
+            return adviserDetail == null
+                ? HttpResponseMessageHelper.BadRequest(adviserDetailGuid)
+                : HttpResponseMessageHelper.Created(adviserDetail);
         }
     }
 }

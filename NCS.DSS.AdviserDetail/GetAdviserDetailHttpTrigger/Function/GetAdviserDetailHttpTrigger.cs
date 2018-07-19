@@ -8,6 +8,7 @@ using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.AdviserDetail.Annotations;
 using NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger.Service;
 using Newtonsoft.Json;
@@ -24,9 +25,9 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to return a list of advisers that have had interactions with a given customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customer/{customerId}/AdviserDetails")]HttpRequestMessage req, TraceWriter log, string customerId)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customer/{customerId}/AdviserDetails")]HttpRequestMessage req, ILogger log, string customerId)
         {
-            log.Info("Get Adviser Details C# HTTP trigger function processed a request.");
+            log.LogInformation("Get Adviser Details C# HTTP trigger function processed a request.");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {

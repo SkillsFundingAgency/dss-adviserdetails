@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -6,8 +7,14 @@ using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.AdviserDetail.Annotations;
+using NCS.DSS.AdviserDetail.Cosmos.Helper;
+using NCS.DSS.AdviserDetail.Helpers;
+using NCS.DSS.AdviserDetail.Ioc;
 using NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service;
+using NCS.DSS.AdviserDetail.Validation;
+using Newtonsoft.Json;
 
 namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
 {
@@ -22,22 +29,38 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Adviser Detail validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new adviser details resource.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "AdviserDetails")]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "AdviserDetails")]HttpRequestMessage req, ILogger log,
+            [Inject]IResourceHelper resourceHelper,
+            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
+            [Inject]IValidate validate,
+            [Inject]IPostAdviserDetailHttpTriggerService adviserDetailsPostService)
         {
-            log.Info("Post Adviser Detail C# HTTP trigger function processed a request.");
+            log.LogInformation("Post Adviser Detail C# HTTP trigger function processed a request.");
 
-            // Get request body
-            var adviserDetail = await req.Content.ReadAsAsync<Models.AdviserDetail>();
+            Models.AdviserDetail adviserDetailRequest;
 
-            var adviserDetailService = new PostAdviserDetailHttpTriggerService();
-            var adviserDetailId = adviserDetailService.Create(adviserDetail);
+            try
+            {
+                adviserDetailRequest = await httpRequestMessageHelper.GetAdviserDetailFromRequest<Models.AdviserDetail>(req);
+            }
+            catch (JsonSerializationException ex)
+            {
+                return HttpResponseMessageHelper.UnprocessableEntity(ex);
+            }
 
-            return adviserDetailId == null
-                ? new HttpResponseMessage(HttpStatusCode.BadRequest)
-                : new HttpResponseMessage(HttpStatusCode.Created)
-                {
-                    Content = new StringContent("Created Adviser Detail record with Id of : " + adviserDetailId)
-                };
+            if (adviserDetailRequest == null)
+                return HttpResponseMessageHelper.UnprocessableEntity(req);
+
+            var errors = validate.ValidateResource(adviserDetailRequest);
+
+            if (errors != null && errors.Any())
+                return HttpResponseMessageHelper.UnprocessableEntity(errors);
+
+            var adviserDetail = await adviserDetailsPostService.CreateAsync(adviserDetailRequest);
+
+            return adviserDetail == null
+                ? HttpResponseMessageHelper.BadRequest()
+                : HttpResponseMessageHelper.Created(adviserDetail);
         }
     }
 }
