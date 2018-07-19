@@ -7,8 +7,9 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using NCS.DSS.AdviserDetail.Annotations;
+using NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service;
 
-namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger
+namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
 {
     public static class PostAdviserDetailHttpTrigger
     {

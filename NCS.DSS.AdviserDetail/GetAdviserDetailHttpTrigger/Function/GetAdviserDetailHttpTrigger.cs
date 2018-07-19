@@ -1,17 +1,18 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
-using Newtonsoft.Json;
-using System.Net.Http;
-using System.Net;
-using System.Threading.Tasks;
-using System.Web.Http.Description;
 using NCS.DSS.AdviserDetail.Annotations;
+using NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger.Service;
+using Newtonsoft.Json;
 
-namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger
+namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger.Function
 {
     public static class GetAdviserDetailHttpTrigger
     {

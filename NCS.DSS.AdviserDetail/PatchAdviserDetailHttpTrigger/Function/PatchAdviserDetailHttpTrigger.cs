@@ -9,7 +9,7 @@ using Microsoft.Azure.WebJobs.Host;
 using NCS.DSS.AdviserDetail.Annotations;
 using Newtonsoft.Json;
 
-namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger
+namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 {
     public static class PatchAdviserDetailHttpTrigger
     {

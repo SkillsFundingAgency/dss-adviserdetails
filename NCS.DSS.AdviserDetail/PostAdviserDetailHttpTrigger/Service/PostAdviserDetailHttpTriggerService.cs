@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
-using NCS.DSS.AdviserDetail.Models;
 
-namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger
+namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service
 {
-    public class PostAdviserDetailHttpTriggerService
+    public class PostAdviserDetailHttpTriggerService : IPostAdviserDetailHttpTriggerService
     {
         public Guid? Create(Models.AdviserDetail adviserDetail)
         {

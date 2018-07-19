@@ -3,20 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger
+namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Service
 {
-    public class GetAdviserDetailHttpTriggerService
+    public class GetAdviserDetailByIdHttpTriggerService : IGetAdviserDetailByIdHttpTriggerService
     {
-        public async Task<List<Models.AdviserDetail>> GetAdviserDetails()
+        public async Task<Models.AdviserDetail> GetAdviserDetail(Guid adviserDetailId)
         {
-            var result = CreateTempAdviserDetails();
+            var adviserDetails = CreateTempAdviserDetails();
+            var result = adviserDetails.FirstOrDefault(a => a.AdviserDetailId == adviserDetailId);
             return await Task.FromResult(result);
-        }
-
-        public async Task<List<Guid>> GetAdviserDetailIdsForCustomer(Guid customerId)
-        {
-            var listOfAdviserDetailIds = new List<Guid> {Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()};
-            return await Task.FromResult(listOfAdviserDetailIds);
         }
 
         public List<Models.AdviserDetail> CreateTempAdviserDetails()
@@ -54,7 +49,5 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger
 
             return adviserDetailList;
         }
-
-
     }
 }
