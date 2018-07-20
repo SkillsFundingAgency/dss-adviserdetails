@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.AdviserDetail.Annotations;
 using NCS.DSS.AdviserDetail.Cosmos.Helper;

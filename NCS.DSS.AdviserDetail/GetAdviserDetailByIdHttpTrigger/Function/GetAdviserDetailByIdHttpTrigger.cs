@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.AdviserDetail.Annotations;
 using NCS.DSS.AdviserDetail.Cosmos.Helper;
 using NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Helpers;
 using NCS.DSS.AdviserDetail.Ioc;
-using Newtonsoft.Json;
 
 namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
 {
@@ -40,7 +38,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
 
             return adviserDetail == null
                 ? HttpResponseMessageHelper.BadRequest(adviserDetailGuid)
-                : HttpResponseMessageHelper.Created(adviserDetail);
+                : HttpResponseMessageHelper.Ok(adviserDetail);
         }
     }
 }
