@@ -42,7 +42,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
             {
                 adviserDetailRequest = await httpRequestMessageHelper.GetAdviserDetailFromRequest<Models.AdviserDetail>(req);
             }
-            catch (JsonSerializationException ex)
+            catch (JsonException ex)
             {
                 return HttpResponseMessageHelper.UnprocessableEntity(ex);
             }

@@ -79,7 +79,7 @@ namespace NCS.DSS.AdviserDetail.Tests
         [Test]
         public async Task PatchAdviserDetailHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenAdviserDetailRequestIsInvalid()
         {
-            _httpRequestMessageHelper.GetAdviserDetailFromRequest<Models.AdviserDetail>(_request).Throws(new JsonSerializationException());
+            _httpRequestMessageHelper.GetAdviserDetailFromRequest<Models.AdviserDetail>(_request).Throws(new JsonException());
 
             var result = await RunFunction(ValidAdviserDetailId);
 

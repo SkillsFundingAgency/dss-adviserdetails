@@ -46,7 +46,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
             {
                 adviserDetailPatchRequest = await httpRequestMessageHelper.GetAdviserDetailFromRequest<Models.AdviserDetailPatch>(req);
             }
-            catch (JsonSerializationException ex)
+            catch (JsonException ex)
             {
                 return HttpResponseMessageHelper.UnprocessableEntity(ex);
             }
