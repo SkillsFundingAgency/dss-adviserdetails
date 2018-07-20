@@ -74,9 +74,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GetAddressByIdHttpTriggerTests.cs" />
-    <Compile Include="PatchAddressHttpTriggerTests.cs" />
-    <Compile Include="PostAddressHttpTriggerTests.cs" />
+    <Compile Include="GetAdviserDetailByIdHttpTriggerTests.cs" />
+    <Compile Include="PatchAdviserDetailHttpTriggerTests.cs" />
+    <Compile Include="PostAdviserDetailHttpTriggerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
