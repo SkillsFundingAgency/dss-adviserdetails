@@ -17,6 +17,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger.Function
 {
     public static class GetAdviserDetailHttpTrigger
     {
+        [Disable]
         [FunctionName("Get")]
         [ResponseType(typeof(Models.AdviserDetail))]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Adviser Details found", ShowSchema = true)]
