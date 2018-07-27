@@ -13,9 +13,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service
             if (adviserDetail == null)
                 return null;
 
-            if (!adviserDetailPatch.LastModifiedDate.HasValue)
-                adviserDetailPatch.LastModifiedDate = DateTime.Now;
-
+            adviserDetailPatch.SetDefaultValues();
             adviserDetail.Patch(adviserDetailPatch);
 
             var documentDbProvider = new DocumentDBProvider();

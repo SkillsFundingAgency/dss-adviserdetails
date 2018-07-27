@@ -12,11 +12,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service
             if (adviserDetail == null)
                 return null;
 
-            var adviserDetailId = Guid.NewGuid();
-            adviserDetail.AdviserDetailId = adviserDetailId;
-
-            if (!adviserDetail.LastModifiedDate.HasValue)
-                adviserDetail.LastModifiedDate = DateTime.Now;
+            adviserDetail.SetDefaultValues();
 
             var documentDbProvider = new DocumentDBProvider();
 

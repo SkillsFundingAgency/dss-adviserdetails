@@ -4,7 +4,7 @@ using NCS.DSS.AdviserDetail.Annotations;
 
 namespace NCS.DSS.AdviserDetail.Models
 {
-    public class AdviserDetailPatch
+    public class AdviserDetailPatch : IAdviserDetail
     {
         [Required]
         [StringLength(100)]
@@ -30,5 +30,11 @@ namespace NCS.DSS.AdviserDetail.Models
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
         [Example(Description = "d1307d77-af23-4cb4-b600-a60e04f8c3df")]
         public Guid? LastModifiedTouchpointId { get; set; }
+
+        public void SetDefaultValues()
+        {
+            if (!LastModifiedDate.HasValue)
+                LastModifiedDate = DateTime.Now;
+        }
     }
 }
