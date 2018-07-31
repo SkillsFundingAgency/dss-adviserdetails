@@ -6,7 +6,6 @@ namespace NCS.DSS.AdviserDetail.Models
 {
     public class AdviserDetailPatch : IAdviserDetail
     {
-        [Required]
         [StringLength(100)]
         [Display(Description = "Name of the adviser")]
         [Example(Description = "this is some text")]

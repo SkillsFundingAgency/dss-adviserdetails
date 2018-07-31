@@ -63,7 +63,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 
             adviserDetailPatchRequest.LastModifiedTouchpointId = touchpointId;
 
-            var errors = validate.ValidateResource(adviserDetailPatchRequest);
+            var errors = validate.ValidateResource(adviserDetailPatchRequest, false);
 
             if (errors != null && errors.Any())
                 return HttpResponseMessageHelper.UnprocessableEntity(errors);

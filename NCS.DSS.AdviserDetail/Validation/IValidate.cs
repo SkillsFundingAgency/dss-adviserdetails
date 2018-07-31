@@ -6,6 +6,6 @@ namespace NCS.DSS.AdviserDetail.Validation
 {
     public interface IValidate
     {
-        List<ValidationResult> ValidateResource(IAdviserDetail resource);
+        List<ValidationResult> ValidateResource(IAdviserDetail resource, bool validateModelForPost);
     }
 }

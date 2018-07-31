@@ -68,7 +68,7 @@ namespace NCS.DSS.AdviserDetail.Tests
             _httpRequestMessageHelper.GetAdviserDetailFromRequest<Models.AdviserDetail>(_request).Returns(Task.FromResult(_address).Result);
 
             var validationResults = new List<ValidationResult> { new ValidationResult("adviser detail Id is Required") };
-            _validate.ValidateResource(Arg.Any<Models.AdviserDetail>()).Returns(validationResults);
+            _validate.ValidateResource(Arg.Any<Models.AdviserDetail>(), true).Returns(validationResults);
 
             var result = await RunFunction();
 

@@ -43,7 +43,6 @@ namespace NCS.DSS.AdviserDetail.Models
 
             if (!LastModifiedDate.HasValue)
                 LastModifiedDate = DateTime.UtcNow;
-
         }
 
         public void Patch(AdviserDetailPatch adviserDetailPatch)
