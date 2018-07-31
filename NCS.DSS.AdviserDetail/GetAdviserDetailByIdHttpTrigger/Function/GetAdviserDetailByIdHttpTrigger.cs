@@ -45,7 +45,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
             var adviserDetail = await getAdviserDetailByIdService.GetAdviserDetailByIdAsync(adviserDetailGuid);
 
             return adviserDetail == null
-                ? HttpResponseMessageHelper.BadRequest(adviserDetailGuid)
+                ? HttpResponseMessageHelper.NoContent(adviserDetailGuid)
                 : HttpResponseMessageHelper.Ok(adviserDetail);
         }
     }

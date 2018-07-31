@@ -76,7 +76,7 @@ namespace NCS.DSS.AdviserDetail.Tests
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
         }
 
         [Test]
