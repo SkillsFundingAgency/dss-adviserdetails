@@ -35,7 +35,14 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
             [Inject]IValidate validate,
             [Inject]IPatchAdviserDetailHttpTriggerService adviserDetailsPatchService)
         {
-            log.LogInformation("Patch Adviser Detail C# HTTP trigger function processed a request.");
+            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
+            if (touchpointId == null)
+            {
+                log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header.");
+                return HttpResponseMessageHelper.BadRequest();
+            }
+
+            log.LogInformation("Patch Adviser Detail C# HTTP trigger function processed a request. " + touchpointId);
 
             if (!Guid.TryParse(adviserDetailId, out var adviserDetailGuid))
                 return HttpResponseMessageHelper.BadRequest(adviserDetailGuid);
@@ -53,6 +60,8 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 
             if (adviserDetailPatchRequest == null)
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
+
+            adviserDetailPatchRequest.LastModifiedTouchpointId = touchpointId;
 
             var errors = validate.ValidateResource(adviserDetailPatchRequest);
 

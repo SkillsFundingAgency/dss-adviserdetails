@@ -34,7 +34,7 @@ namespace NCS.DSS.AdviserDetail.Models
         public void SetDefaultValues()
         {
             if (!LastModifiedDate.HasValue)
-                LastModifiedDate = DateTime.Now;
+                LastModifiedDate = DateTime.UtcNow;
         }
     }
 }

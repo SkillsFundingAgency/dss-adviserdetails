@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace NCS.DSS.AdviserDetail.Helpers
@@ -6,5 +7,6 @@ namespace NCS.DSS.AdviserDetail.Helpers
     public interface IHttpRequestMessageHelper
     {
         Task<T> GetAdviserDetailFromRequest<T>(HttpRequestMessage req);
+        Guid? GetTouchpointId(HttpRequestMessage req);
     }
 }

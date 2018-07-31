@@ -27,9 +27,17 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
         [Display(Name = "Get", Description = "Ability to return the adviser details for a given interaction.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "AdviserDetails/{adviserDetailId}")]HttpRequestMessage req, ILogger log, string adviserDetailId,
             [Inject]IResourceHelper resourceHelper,
+            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IGetAdviserDetailByIdHttpTriggerService getAdviserDetailByIdService)
         {
-            log.LogInformation("Get Adviser Detail By Id C# HTTP trigger function  processed a request.");
+            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
+            if (touchpointId == null)
+            {
+                log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header.");
+                return HttpResponseMessageHelper.BadRequest();
+            }
+
+            log.LogInformation("Get Adviser Detail By Id C# HTTP trigger function  processed a request. " + touchpointId);
 
             if (!Guid.TryParse(adviserDetailId, out var adviserDetailGuid))
                 return HttpResponseMessageHelper.BadRequest(adviserDetailGuid);

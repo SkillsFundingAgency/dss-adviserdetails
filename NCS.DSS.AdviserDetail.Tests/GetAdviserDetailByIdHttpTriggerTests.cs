@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.AdviserDetail.Cosmos.Helper;
 using NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Service;
+using NCS.DSS.AdviserDetail.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -18,6 +19,7 @@ namespace NCS.DSS.AdviserDetail.Tests
         private ILogger _log;
         private HttpRequestMessage _request;
         private IResourceHelper _resourceHelper;
+        private IHttpRequestMessageHelper _httpRequestMessageHelper;
         private IGetAdviserDetailByIdHttpTriggerService _getAdviserDetailByIdHttpTriggerService;
         private Models.AdviserDetail _adviserDetail;
 
@@ -35,7 +37,22 @@ namespace NCS.DSS.AdviserDetail.Tests
 
             _log = Substitute.For<ILogger>();
             _resourceHelper = Substitute.For<IResourceHelper>();
+            _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
             _getAdviserDetailByIdHttpTriggerService = Substitute.For<IGetAdviserDetailByIdHttpTriggerService>();
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
+        }
+
+        [Test]
+        public async Task GetAdviserDetailByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
+        {
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns((Guid?)null);
+
+            // Act
+            var result = await RunFunction(ValidAdviserDetailId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
         [Test]
@@ -78,7 +95,7 @@ namespace NCS.DSS.AdviserDetail.Tests
         private async Task<HttpResponseMessage> RunFunction(string adviserDetailId)
         {
             return await GetAdviserDetailByIdHttpTrigger.Function.GetAdviserDetailByIdHttpTrigger.Run(
-                _request, _log, adviserDetailId, _resourceHelper, _getAdviserDetailByIdHttpTriggerService).ConfigureAwait(false);
+                _request, _log, adviserDetailId, _resourceHelper, _httpRequestMessageHelper, _getAdviserDetailByIdHttpTriggerService).ConfigureAwait(false);
         }
 
     }

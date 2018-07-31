@@ -34,7 +34,14 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
             [Inject]IValidate validate,
             [Inject]IPostAdviserDetailHttpTriggerService adviserDetailsPostService)
         {
-            log.LogInformation("Post Adviser Detail C# HTTP trigger function processed a request.");
+            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
+            if (touchpointId == null)
+            {
+                log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header.");
+                return HttpResponseMessageHelper.BadRequest();
+            }
+
+            log.LogInformation("Post Adviser Detail C# HTTP trigger function processed a request. " + touchpointId);
 
             Models.AdviserDetail adviserDetailRequest;
 
@@ -49,6 +56,8 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
 
             if (adviserDetailRequest == null)
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
+
+            adviserDetailRequest.LastModifiedTouchpointId = touchpointId;
 
             var errors = validate.ValidateResource(adviserDetailRequest);
 

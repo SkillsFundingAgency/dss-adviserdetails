@@ -42,7 +42,7 @@ namespace NCS.DSS.AdviserDetail.Models
             AdviserDetailId = adviserDetailId;
 
             if (!LastModifiedDate.HasValue)
-                LastModifiedDate = DateTime.Now;
+                LastModifiedDate = DateTime.UtcNow;
 
         }
 
