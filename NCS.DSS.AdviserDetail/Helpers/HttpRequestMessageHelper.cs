@@ -9,6 +9,12 @@ namespace NCS.DSS.AdviserDetail.Helpers
     {
         public async Task<T> GetAdviserDetailFromRequest<T>(HttpRequestMessage req)
         {
+            if (req == null)
+                return default(T);
+
+            if(req.Content?.Headers?.ContentType != null)
+                req.Content.Headers.ContentType.MediaType = "application/json";
+
             return await req.Content.ReadAsAsync<T>();
         }
 
