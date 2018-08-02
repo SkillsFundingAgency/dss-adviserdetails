@@ -7,6 +7,7 @@ namespace NCS.DSS.AdviserDetail.Models
     public class AdviserDetailPatch : IAdviserDetail
     {
         [StringLength(100)]
+        [RegularExpression(@"^[a-zA-Z]+(([\s'\,\.\-][a-zA-Z])?[a-zA-Z]*)*$")]
         [Display(Description = "Name of the adviser")]
         [Example(Description = "this is some text")]
         public string AdviserName { get; set; }
