@@ -68,7 +68,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
 
             return adviserDetail == null
                 ? HttpResponseMessageHelper.BadRequest()
-                : HttpResponseMessageHelper.Created(adviserDetail);
+                : HttpResponseMessageHelper.Created(JsonHelper.SerializeObject(adviserDetail));
         }
     }
 }

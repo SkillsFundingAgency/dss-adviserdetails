@@ -46,7 +46,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
 
             return adviserDetail == null
                 ? HttpResponseMessageHelper.NoContent(adviserDetailGuid)
-                : HttpResponseMessageHelper.Ok(adviserDetail);
+                : HttpResponseMessageHelper.Ok(JsonHelper.SerializeObject(adviserDetail));
         }
     }
 }
