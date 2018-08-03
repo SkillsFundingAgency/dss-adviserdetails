@@ -77,7 +77,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 
             return updatedAdviserDetail == null
                 ? HttpResponseMessageHelper.BadRequest(adviserDetailGuid)
-                : HttpResponseMessageHelper.Ok(updatedAdviserDetail);
+                : HttpResponseMessageHelper.Ok(JsonHelper.SerializeObject(updatedAdviserDetail));
         }
     }
 }
