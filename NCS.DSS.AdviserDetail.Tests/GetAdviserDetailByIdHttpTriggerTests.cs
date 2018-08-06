@@ -39,13 +39,13 @@ namespace NCS.DSS.AdviserDetail.Tests
             _resourceHelper = Substitute.For<IResourceHelper>();
             _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
             _getAdviserDetailByIdHttpTriggerService = Substitute.For<IGetAdviserDetailByIdHttpTriggerService>();
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns("00000000001");
         }
 
         [Test]
         public async Task GetAdviserDetailByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns((Guid?)null);
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns((string)null);
 
             // Act
             var result = await RunFunction(ValidAdviserDetailId);

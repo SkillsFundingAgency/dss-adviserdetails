@@ -7,6 +7,6 @@ namespace NCS.DSS.AdviserDetail.Helpers
     public interface IHttpRequestMessageHelper
     {
         Task<T> GetAdviserDetailFromRequest<T>(HttpRequestMessage req);
-        Guid? GetTouchpointId(HttpRequestMessage req);
+        string GetTouchpointId(HttpRequestMessage req);
     }
 }

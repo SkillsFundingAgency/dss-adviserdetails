@@ -8,7 +8,7 @@ namespace NCS.DSS.AdviserDetail.Models
         string AdviserEmailAddress { get; set; }
         string AdviserContactNumber { get; set; }
         DateTime? LastModifiedDate { get; set; }
-        Guid? LastModifiedTouchpointId { get; set; }
+        string LastModifiedTouchpointId { get; set; }
 
         void SetDefaultValues();
 

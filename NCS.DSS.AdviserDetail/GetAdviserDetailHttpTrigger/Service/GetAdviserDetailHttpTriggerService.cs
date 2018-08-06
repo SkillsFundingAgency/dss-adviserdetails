@@ -29,7 +29,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger.Service
                     AdviserEmailAddress = "Thor@Asgard.com",
                     AdviserContactNumber = "00112233445",
                     LastModifiedDate = DateTime.Today.AddYears(-1),
-                    LastModifiedTouchpointId = Guid.NewGuid()
+                    LastModifiedTouchpointId = string.Empty
                 },
                 new Models.AdviserDetail
                 {
@@ -38,7 +38,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger.Service
                     AdviserEmailAddress = "Hulk@Marvel.com",
                     AdviserContactNumber = "00223344556",
                     LastModifiedDate = DateTime.Today.AddYears(-2),
-                    LastModifiedTouchpointId = Guid.NewGuid()
+                    LastModifiedTouchpointId = string.Empty
                 },
                 new Models.AdviserDetail
                 {
@@ -47,7 +47,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailHttpTrigger.Service
                     AdviserEmailAddress = "Panter@Wakanda.com",
                     AdviserContactNumber = "00334455667",
                     LastModifiedDate = DateTime.Today.AddYears(-3),
-                    LastModifiedTouchpointId = Guid.NewGuid()
+                    LastModifiedTouchpointId =  string.Empty
                 }
             };
 
