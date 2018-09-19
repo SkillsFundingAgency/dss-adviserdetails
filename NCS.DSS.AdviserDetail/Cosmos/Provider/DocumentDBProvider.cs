@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
@@ -12,20 +11,11 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
 {
     public class DocumentDBProvider : IDocumentDBProvider
     {
-        private readonly DocumentDBHelper _documentDbHelper;
-        private readonly DocumentDBClient _databaseClient;
-
-        public DocumentDBProvider()
-        {
-            _documentDbHelper = new DocumentDBHelper();
-            _databaseClient = new DocumentDBClient();
-        }
-
         public bool DoesCustomerResourceExist(Guid customerId)
         {
-            var collectionUri = _documentDbHelper.CreateCustomerDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateCustomerDocumentCollectionUri();
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return false;
@@ -36,9 +26,9 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
 
         public async Task<Models.AdviserDetail> GetAdviserDetailByIdAsync(Guid adviserDetailId)
         {
-            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             var adviserDetailQuery = client
                 ?.CreateDocumentQuery<Models.AdviserDetail>(collectionUri, new FeedOptions { MaxItemCount = 1 })
@@ -56,9 +46,9 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
         public async Task<ResourceResponse<Document>> CreateAdviserDetailAsync(Models.AdviserDetail adviserDetail)
         {
 
-            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
@@ -71,9 +61,9 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
 
         public async Task<ResourceResponse<Document>> UpdateAdviserDetailAsync(Models.AdviserDetail adviserDetail)
         {
-            var documentUri = _documentDbHelper.CreateDocumentUri(adviserDetail.AdviserDetailId.GetValueOrDefault());
+            var documentUri = DocumentDBHelper.CreateDocumentUri(adviserDetail.AdviserDetailId.GetValueOrDefault());
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
