@@ -26,7 +26,6 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to return the adviser details for a given interaction.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "AdviserDetails/{adviserDetailId}")]HttpRequestMessage req, ILogger log, string adviserDetailId,
-            [Inject]IResourceHelper resourceHelper,
             [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IGetAdviserDetailByIdHttpTriggerService getAdviserDetailByIdService)
         {

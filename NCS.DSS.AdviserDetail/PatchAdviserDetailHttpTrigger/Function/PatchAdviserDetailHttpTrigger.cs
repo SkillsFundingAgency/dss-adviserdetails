@@ -30,7 +30,6 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
         [Response(HttpStatusCode = 422, Description = "Adviser Detail validation error(s)", ShowSchema = false)]
         [Display(Name = "Patch", Description = "Ability to modify/update an adviser details record.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "AdviserDetails/{adviserDetailId}")]HttpRequestMessage req, ILogger log, string adviserDetailId,
-            [Inject]IResourceHelper resourceHelper,
             [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IValidate validate,
             [Inject]IPatchAdviserDetailHttpTriggerService adviserDetailsPatchService)

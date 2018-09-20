@@ -20,7 +20,6 @@ namespace NCS.DSS.AdviserDetail.Ioc
             services.AddTransient<IGetAdviserDetailByIdHttpTriggerService, GetAdviserDetailByIdHttpTriggerService>();
             services.AddTransient<IPostAdviserDetailHttpTriggerService, PostAdviserDetailHttpTriggerService>();
             services.AddTransient<IPatchAdviserDetailHttpTriggerService, PatchAdviserDetailHttpTriggerService>();
-            services.AddTransient<IResourceHelper, ResourceHelper>();
             services.AddTransient<IValidate, Validate>();
             services.AddTransient<IHttpRequestMessageHelper, HttpRequestMessageHelper>();
             return services.BuildServiceProvider(true);
