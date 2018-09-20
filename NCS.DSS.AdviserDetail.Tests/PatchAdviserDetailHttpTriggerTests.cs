@@ -23,7 +23,6 @@ namespace NCS.DSS.AdviserDetail.Tests
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
         private ILogger _log;
         private HttpRequestMessage _request;
-        private IResourceHelper _resourceHelper;
         private IValidate _validate;
         private IHttpRequestMessageHelper _httpRequestMessageHelper;
         private IPatchAdviserDetailHttpTriggerService _patchAdviserDetailHttpTriggerService;
@@ -45,7 +44,6 @@ namespace NCS.DSS.AdviserDetail.Tests
             };
 
             _log = Substitute.For<ILogger>();
-            _resourceHelper = Substitute.For<IResourceHelper>();
             _validate = Substitute.For<IValidate>();
             _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
             _patchAdviserDetailHttpTriggerService = Substitute.For<IPatchAdviserDetailHttpTriggerService>();
@@ -168,7 +166,7 @@ namespace NCS.DSS.AdviserDetail.Tests
         private async Task<HttpResponseMessage> RunFunction(string adviserDetailId)
         {
             return await PatchAdviserDetailHttpTrigger.Function.PatchAdviserDetailHttpTrigger.Run(
-                _request, _log, adviserDetailId, _resourceHelper, _httpRequestMessageHelper, _validate, _patchAdviserDetailHttpTriggerService).ConfigureAwait(false);
+                _request, _log, adviserDetailId, _httpRequestMessageHelper, _validate, _patchAdviserDetailHttpTriggerService).ConfigureAwait(false);
         }
 
     }

@@ -18,7 +18,6 @@ namespace NCS.DSS.AdviserDetail.Tests
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
         private ILogger _log;
         private HttpRequestMessage _request;
-        private IResourceHelper _resourceHelper;
         private IHttpRequestMessageHelper _httpRequestMessageHelper;
         private IGetAdviserDetailByIdHttpTriggerService _getAdviserDetailByIdHttpTriggerService;
         private Models.AdviserDetail _adviserDetail;
@@ -36,7 +35,6 @@ namespace NCS.DSS.AdviserDetail.Tests
             };
 
             _log = Substitute.For<ILogger>();
-            _resourceHelper = Substitute.For<IResourceHelper>();
             _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
             _getAdviserDetailByIdHttpTriggerService = Substitute.For<IGetAdviserDetailByIdHttpTriggerService>();
             _httpRequestMessageHelper.GetTouchpointId(_request).Returns("00000000001");
@@ -95,7 +93,7 @@ namespace NCS.DSS.AdviserDetail.Tests
         private async Task<HttpResponseMessage> RunFunction(string adviserDetailId)
         {
             return await GetAdviserDetailByIdHttpTrigger.Function.GetAdviserDetailByIdHttpTrigger.Run(
-                _request, _log, adviserDetailId, _resourceHelper, _httpRequestMessageHelper, _getAdviserDetailByIdHttpTriggerService).ConfigureAwait(false);
+                _request, _log, adviserDetailId, _httpRequestMessageHelper, _getAdviserDetailByIdHttpTriggerService).ConfigureAwait(false);
         }
 
     }

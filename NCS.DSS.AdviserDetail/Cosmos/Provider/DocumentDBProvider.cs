@@ -11,36 +11,26 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
 {
     public class DocumentDBProvider : IDocumentDBProvider
     {
-        public bool DoesCustomerResourceExist(Guid customerId)
-        {
-            var collectionUri = DocumentDBHelper.CreateCustomerDocumentCollectionUri();
-
-            var client = DocumentDBClient.CreateDocumentClient();
-
-            if (client == null)
-                return false;
-
-            var customerQuery = client.CreateDocumentQuery<Document>(collectionUri, new FeedOptions() { MaxItemCount = 1 });
-            return customerQuery.Where(x => x.Id == customerId.ToString()).Select(x => x.Id).AsEnumerable().Any();
-        }
-
         public async Task<Models.AdviserDetail> GetAdviserDetailByIdAsync(Guid adviserDetailId)
         {
-            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
+            var documentUri = DocumentDBHelper.CreateDocumentUri(adviserDetailId);
 
             var client = DocumentDBClient.CreateDocumentClient();
 
-            var adviserDetailQuery = client
-                ?.CreateDocumentQuery<Models.AdviserDetail>(collectionUri, new FeedOptions { MaxItemCount = 1 })
-                .Where(x => x.AdviserDetailId == adviserDetailId)
-                .AsDocumentQuery();
+            try
+            {
+                var response = await client.ReadDocumentAsync(documentUri);
 
-            if (adviserDetailQuery == null)
+                if (response.Resource != null)
+                    return (dynamic) response.Resource;
+            }
+            catch (DocumentClientException)
+            {
                 return null;
+            }
 
-            var adviserDetail = await adviserDetailQuery.ExecuteNextAsync<Models.AdviserDetail>();
+            return null;
 
-            return adviserDetail?.FirstOrDefault();
         }
 
         public async Task<ResourceResponse<Document>> CreateAdviserDetailAsync(Models.AdviserDetail adviserDetail)

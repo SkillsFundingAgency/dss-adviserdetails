@@ -29,7 +29,6 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
         [Response(HttpStatusCode = 422, Description = "Adviser Detail validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new adviser details resource.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "AdviserDetails")]HttpRequestMessage req, ILogger log,
-            [Inject]IResourceHelper resourceHelper,
             [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IValidate validate,
             [Inject]IPostAdviserDetailHttpTriggerService adviserDetailsPostService)

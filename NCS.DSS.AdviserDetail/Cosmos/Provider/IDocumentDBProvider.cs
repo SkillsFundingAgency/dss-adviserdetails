@@ -7,7 +7,6 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
 {
     public interface IDocumentDBProvider
     {
-        bool DoesCustomerResourceExist(Guid customerId);
         Task<Models.AdviserDetail> GetAdviserDetailByIdAsync(Guid adviserDetailId);
         Task<ResourceResponse<Document>> CreateAdviserDetailAsync(Models.AdviserDetail adviserDetailId);
         Task<ResourceResponse<Document>> UpdateAdviserDetailAsync(Models.AdviserDetail adviserDetailId);
