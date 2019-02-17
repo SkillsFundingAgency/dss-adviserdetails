@@ -4,6 +4,6 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service
 {
     public interface IPostAdviserDetailHttpTriggerService
     {
-        Task<Models.AdviserDetail> CreateAsync(Models.AdviserDetail adviserDetail);
+        Task<Models.AdviserDetail> CreateAsync(Models.AdviserDetail AdviserDetail);
     }
 }

@@ -8,28 +8,48 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service
 {
     public class PatchAdviserDetailHttpTriggerService : IPatchAdviserDetailHttpTriggerService
     {
-        public async Task<Models.AdviserDetail> UpdateAsync(Models.AdviserDetail adviserDetail, AdviserDetailPatch adviserDetailPatch)
+        private readonly IAdviserDetailPatchService _adviserdetailPatchService;
+        private readonly IDocumentDBProvider _documentDbProvider;
+
+        public PatchAdviserDetailHttpTriggerService(IDocumentDBProvider documentDbProvider, IAdviserDetailPatchService adviserdetailPatchService)
         {
-            if (adviserDetail == null)
+            _documentDbProvider = documentDbProvider;
+            _adviserdetailPatchService = adviserdetailPatchService;
+        }
+
+        public Models.AdviserDetail PatchResource(string adviserdetailJson, AdviserDetailPatch AdviserDetailPatch)
+        {
+            if (string.IsNullOrEmpty(adviserdetailJson))
                 return null;
 
-            adviserDetailPatch.SetDefaultValues();
-            adviserDetail.Patch(adviserDetailPatch);
+            if (AdviserDetailPatch == null)
+                return null;
 
-            var documentDbProvider = new DocumentDBProvider();
-            var response = await documentDbProvider.UpdateAdviserDetailAsync(adviserDetail);
+            AdviserDetailPatch.SetDefaultValues();
 
-            var responseStatusCode = response.StatusCode;
+            var updatedAdviserDetail = _adviserdetailPatchService.Patch(adviserdetailJson, AdviserDetailPatch);
 
-            return responseStatusCode == HttpStatusCode.OK ? adviserDetail : null;
+            return updatedAdviserDetail;
         }
 
-        public async Task<Models.AdviserDetail> GetAdviserDetailByIdAsync(Guid adviserDetailId)
+        public async Task<Models.AdviserDetail> UpdateCosmosAsync(Models.AdviserDetail adviserdetail)
         {
-            var documentDbProvider = new DocumentDBProvider();
-            var adviserDetail = await documentDbProvider.GetAdviserDetailByIdAsync(adviserDetailId);
+            if (adviserdetail == null)
+                return null;
 
-            return adviserDetail;
+            var response = await _documentDbProvider.UpdateAdviserDetailAsync(adviserdetail);
+
+            var responseStatusCode = response?.StatusCode;
+
+            return responseStatusCode == HttpStatusCode.OK ? (dynamic)response.Resource : null;
         }
+
+        public async Task<string> GetAdviserDetailByIdAsync(Guid adviserDetailId)
+        {
+            var AdviserDetail = await _documentDbProvider.GetAdviserDetailsByIdToUpdateAsync(adviserDetailId);
+
+            return AdviserDetail;
+        }
+
     }
 }

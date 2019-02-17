@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using NCS.DSS.AdviserDetail.Annotations;
+using DFC.Swagger.Standard.Annotations;
+using NCS.DSS.AdviserDetails.Models;
 
 namespace NCS.DSS.AdviserDetail.Models
 {
     public class AdviserDetailPatch : IAdviserDetail
     {
+
         [StringLength(100)]
         [RegularExpression(@"^[a-zA-Z]+(([\s'\,\.\-][a-zA-Z])?[a-zA-Z]*)*$")]
         [Display(Description = "Name of the adviser")]
@@ -37,5 +39,11 @@ namespace NCS.DSS.AdviserDetail.Models
             if (!LastModifiedDate.HasValue)
                 LastModifiedDate = DateTime.UtcNow;
         }
+
+        public void SetIds(string touchpointId)
+        {
+            LastModifiedTouchpointId = touchpointId;
+        }
+
     }
 }

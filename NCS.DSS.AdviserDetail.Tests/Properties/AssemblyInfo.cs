@@ -1,19 +1,18 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("NCS.DSS.AdviserDetail.Tests")]
+[assembly: AssemblyTitle("NCS.DSS.AdviserDetail.Tests.FunctionTests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("NCS.DSS.AdviserDetail.Tests")]
+[assembly: AssemblyProduct("NCS.DSS.AdviserDetail.Tests.FunctionTests")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 [assembly: ComVisible(false)]
 
-[assembly: Guid("9a878584-6018-4a0a-9c76-b584cde8c200")]
+[assembly: Guid("ff3132cb-ba35-416c-a572-e0dd69ebcb33")]
 
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]

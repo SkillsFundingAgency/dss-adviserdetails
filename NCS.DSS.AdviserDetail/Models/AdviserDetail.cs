@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using NCS.DSS.AdviserDetail.Annotations;
+using DFC.Swagger.Standard.Annotations;
+using NCS.DSS.AdviserDetails.Models;
 
 namespace NCS.DSS.AdviserDetail.Models
 {
     public class AdviserDetail : IAdviserDetail
     {
+
         [Display(Description = "Unique identifier of the adviser involved in the interaction.")]
         [Example(Description = "b8592ff8-af97-49ad-9fb2-e5c3c717fd85")]
         [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
@@ -46,25 +48,10 @@ namespace NCS.DSS.AdviserDetail.Models
                 LastModifiedDate = DateTime.UtcNow;
         }
 
-        public void Patch(AdviserDetailPatch adviserDetailPatch)
+        public void SetIds(string touchpointId)
         {
-            if (adviserDetailPatch == null)
-                return;
-
-            if(!string.IsNullOrEmpty(adviserDetailPatch.AdviserName))
-                AdviserName = adviserDetailPatch.AdviserName;
-
-            if (!string.IsNullOrEmpty(adviserDetailPatch.AdviserEmailAddress))
-                AdviserEmailAddress = adviserDetailPatch.AdviserEmailAddress;
-
-            if (!string.IsNullOrEmpty(adviserDetailPatch.AdviserContactNumber))
-                AdviserContactNumber = adviserDetailPatch.AdviserContactNumber;
-
-            if (adviserDetailPatch.LastModifiedDate.HasValue)
-                LastModifiedDate = adviserDetailPatch.LastModifiedDate;
-
-            if (!string.IsNullOrEmpty(adviserDetailPatch.LastModifiedTouchpointId))
-                LastModifiedTouchpointId = adviserDetailPatch.LastModifiedTouchpointId;
+            AdviserDetailId = Guid.NewGuid();
+            LastModifiedTouchpointId = touchpointId;
         }
     }
 }
