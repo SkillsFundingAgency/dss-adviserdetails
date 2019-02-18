@@ -60,6 +60,9 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
                 return httpResponseMessageHelper.BadRequest();
             }
 
+            var subcontractorId = httpRequestHelper.GetDssSubcontractorId(req);
+            if (string.IsNullOrEmpty(subcontractorId))
+                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
 
             Models.AdviserDetail AdviserDetailRequest;
 
@@ -81,7 +84,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for Adviser Detail");
-            AdviserDetailRequest.SetIds(touchpointId);
+            AdviserDetailRequest.SetIds(touchpointId, subcontractorId);
 
                      
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");

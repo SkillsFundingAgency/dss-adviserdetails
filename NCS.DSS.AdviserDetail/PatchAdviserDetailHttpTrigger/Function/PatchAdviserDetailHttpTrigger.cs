@@ -60,7 +60,11 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
                 return httpResponseMessageHelper.BadRequest();
             }
 
-                        
+            var subcontractorId = httpRequestHelper.GetDssSubcontractorId(req);
+            if (string.IsNullOrEmpty(subcontractorId))
+                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
+
+
             if (!Guid.TryParse(adviserDetailId, out var AdviserDetailGuid))
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'adviserDetailId' to a Guid: {0}", adviserDetailId));
@@ -87,7 +91,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for Adviser Detail patch");
-            AdviserDetailPatchRequest.SetIds(touchpointId);
+            AdviserDetailPatchRequest.SetIds(touchpointId, subcontractorId);
 
             
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Adviser Detail", AdviserDetailGuid));

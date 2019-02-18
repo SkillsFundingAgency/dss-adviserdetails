@@ -20,6 +20,14 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service
 
             var obj = JObject.Parse(adviserdetailJson);
 
+            if (!string.IsNullOrEmpty(adviserdetailPatch.SubcontractorId))
+            {
+                if (obj["SubcontractorId"] == null)
+                    _jsonHelper.CreatePropertyOnJObject(obj, "SubcontractorId", adviserdetailPatch.SubcontractorId);
+                else
+                    _jsonHelper.UpdatePropertyValue(obj["SubcontractorId"], adviserdetailPatch.SubcontractorId);
+            }
+
             if (!string.IsNullOrEmpty(adviserdetailPatch.AdviserName))
                 _jsonHelper.UpdatePropertyValue(obj["AdviserName"], adviserdetailPatch.AdviserName);
 

@@ -35,7 +35,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ModelTests
         {
             var diversity = new Models.AdviserDetail();
 
-            diversity.SetIds(Arg.Any<string>());
+            diversity.SetIds(Arg.Any<string>(), Arg.Any<string>());
 
             // Assert
             Assert.AreNotSame(Guid.Empty, diversity.AdviserDetailId);
@@ -47,7 +47,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ModelTests
         {
             var diversity = new Models.AdviserDetail();
 
-            diversity.SetIds("0000000000");
+            diversity.SetIds("0000000000", Arg.Any<string>());
 
             // Assert
             Assert.AreEqual("0000000000", diversity.LastModifiedTouchpointId);

@@ -8,8 +8,8 @@
     <ProjectGuid>{FF3132CB-BA35-416C-A572-E0DD69EBCB33}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NCS.DSS.AdviserDetails.Tests</RootNamespace>
-    <AssemblyName>NCS.DSS.AdviserDetails.Tests</AssemblyName>
+    <RootNamespace>NCS.DSS.AdviserDetail.Tests</RootNamespace>
+    <AssemblyName>NCS.DSS.AdviserDetail.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -52,7 +52,7 @@
       <HintPath>..\packages\DFC.HTTP.Standard.0.1.0\lib\netstandard2.0\DFC.HTTP.Standard.dll</HintPath>
     </Reference>
     <Reference Include="DFC.JSON.Standard, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DFC.JSON.Standard.0.1.0\lib\netstandard2.0\DFC.JSON.Standard.dll</HintPath>
+      <HintPath>..\packages\DFC.JSON.Standard.0.1.2\lib\netstandard2.0\DFC.JSON.Standard.dll</HintPath>
     </Reference>
     <Reference Include="DFC.Swagger.Standard, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DFC.Swagger.Standard.0.1.0\lib\netstandard2.0\DFC.Swagger.Standard.dll</HintPath>
@@ -381,7 +381,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NCS.DSS.AdviserDetail\NCS.DSS.AdviserDetail.csproj">
       <Project>{7E947D23-7D97-427D-9D8F-9F49DFCD6495}</Project>
-      <Name>NCS.DSS.AdviserDetails</Name>
+      <Name>NCS.DSS.AdviserDetail</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

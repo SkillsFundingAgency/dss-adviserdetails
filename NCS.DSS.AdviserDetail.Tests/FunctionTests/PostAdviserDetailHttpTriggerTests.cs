@@ -84,10 +84,10 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         public async Task PostAdviserDetailHttpTrigger_ReturnsStatusCodeBadRequest_WhenAdviserDetailIsInvalid()
         {
             _httpResponseMessageHelper
-                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+                .BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             // Act
-            var result = await RunFunction(InValidId);
+            var result = await RunFunction(ValidAdviserDetailId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -100,7 +100,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         public async Task PostAdviserDetailHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenAdviserDetailHasFailedValidation()
         {
             var validationResults = new List<ValidationResult> { new ValidationResult("Adviser Name is a required field") };
-            _validate.ValidateResource(Arg.Any<Models.AdviserDetail>(),false).Returns(validationResults);
+            _validate.ValidateResource(Arg.Any<Models.AdviserDetail>(), true).Returns(validationResults);
 
             _httpResponseMessageHelper
                 .UnprocessableEntity(Arg.Any<List<ValidationResult>>()).Returns(x => new HttpResponseMessage((HttpStatusCode)422));
@@ -135,7 +135,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _postAdviserDetailHttpTriggerService.CreateAsync(Arg.Any<Models.AdviserDetail>()).Returns(Task.FromResult<Models.AdviserDetail>(null).Result);
 
             _httpResponseMessageHelper
-                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+                .BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             var result = await RunFunction(ValidAdviserDetailId);
 
@@ -150,7 +150,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _postAdviserDetailHttpTriggerService.CreateAsync(Arg.Any<Models.AdviserDetail>()).Returns(Task.FromResult<Models.AdviserDetail>(null).Result);
 
             _httpResponseMessageHelper
-                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+                .BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             var result = await RunFunction(InValidId);
 
