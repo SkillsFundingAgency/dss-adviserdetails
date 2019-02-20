@@ -1,5 +1,5 @@
 variables:
-    SolutionBaseName: 'NCS.DSS.AdvserDetail'
+    SolutionBaseName: 'NCS.DSS.AdviserDetail'
     BuildPlatform: 'any cpu'
     BuildConfiguration: 'release'
 
