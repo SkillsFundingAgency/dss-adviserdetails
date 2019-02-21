@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using NCS.DSS.AdviserDetail.Cosmos.Helper;
 using NCS.DSS.AdviserDetail.Helpers;
 using NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Validation;
@@ -14,7 +13,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
-namespace NCS.DSS.AdviserDetail.Tests
+namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
 {
     [TestFixture]
     public class PatchAdviserDetailHttpTriggerTests
@@ -105,7 +104,7 @@ namespace NCS.DSS.AdviserDetail.Tests
         {
             _httpRequestMessageHelper.GetAdviserDetailFromRequest<Models.AdviserDetailPatch>(_request).Returns(Task.FromResult(_addressPatch).Result);
 
-            _patchAdviserDetailHttpTriggerService.GetAdviserDetailByIdAsync(Arg.Any<Guid>()).Returns(Task.FromResult<Models.AdviserDetail>(null).Result);
+            _patchAdviserDetailHttpTriggerService.GetAdviserDetailByIdAsync(Arg.Any<Guid>()).Returns(Task.FromResult<string>(null).Result);
 
             // Act
             var result = await RunFunction(ValidAdviserDetailId);
@@ -120,9 +119,9 @@ namespace NCS.DSS.AdviserDetail.Tests
         {
             _httpRequestMessageHelper.GetAdviserDetailFromRequest<Models.AdviserDetailPatch>(_request).Returns(Task.FromResult(_addressPatch).Result);
 
-            _patchAdviserDetailHttpTriggerService.GetAdviserDetailByIdAsync(Arg.Any<Guid>()).Returns(Task.FromResult<Models.AdviserDetail>(_address).Result);
+            _patchAdviserDetailHttpTriggerService.GetAdviserDetailByIdAsync(Arg.Any<Guid>()).Returns(Task.FromResult<string>(_address.ToString()).Result);
 
-            _patchAdviserDetailHttpTriggerService.UpdateAsync(Arg.Any<Models.AdviserDetail>(), Arg.Any<Models.AdviserDetailPatch>()).Returns(Task.FromResult<Models.AdviserDetail>(null).Result);
+            _patchAdviserDetailHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.AdviserDetail>(null).Result);
 
             var result = await RunFunction(ValidAdviserDetailId);
 
@@ -136,9 +135,9 @@ namespace NCS.DSS.AdviserDetail.Tests
         {
             _httpRequestMessageHelper.GetAdviserDetailFromRequest<Models.AdviserDetailPatch>(_request).Returns(Task.FromResult(_addressPatch).Result);
 
-            _patchAdviserDetailHttpTriggerService.GetAdviserDetailByIdAsync(Arg.Any<Guid>()).Returns(Task.FromResult(_address).Result);
+            _patchAdviserDetailHttpTriggerService.GetAdviserDetailByIdAsync(Arg.Any<Guid>()).Returns(Task.FromResult(_address.ToString()).Result);
 
-            _patchAdviserDetailHttpTriggerService.UpdateAsync(Arg.Any<Models.AdviserDetail>(), Arg.Any<Models.AdviserDetailPatch>()).Returns(Task.FromResult<Models.AdviserDetail>(null).Result);
+            _patchAdviserDetailHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.AdviserDetail>(null).Result);
 
             var result = await RunFunction(ValidAdviserDetailId);
 
@@ -152,9 +151,9 @@ namespace NCS.DSS.AdviserDetail.Tests
         {
             _httpRequestMessageHelper.GetAdviserDetailFromRequest<Models.AdviserDetailPatch>(_request).Returns(Task.FromResult(_addressPatch).Result);
 
-            _patchAdviserDetailHttpTriggerService.GetAdviserDetailByIdAsync(Arg.Any<Guid>()).Returns(Task.FromResult(_address).Result);
+            _patchAdviserDetailHttpTriggerService.GetAdviserDetailByIdAsync(Arg.Any<Guid>()).Returns(Task.FromResult(_address.ToString()).Result);
 
-            _patchAdviserDetailHttpTriggerService.UpdateAsync(Arg.Any<Models.AdviserDetail>(), Arg.Any<Models.AdviserDetailPatch>()).Returns(Task.FromResult(_address).Result);
+            _patchAdviserDetailHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult(_address).Result);
 
             var result = await RunFunction(ValidAdviserDetailId);
 

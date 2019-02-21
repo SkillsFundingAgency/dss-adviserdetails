@@ -74,10 +74,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GetAdviserDetailByIdHttpTriggerTests.cs" />
-    <Compile Include="PatchAdviserDetailHttpTriggerTests.cs" />
-    <Compile Include="PostAdviserDetailHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\GetAdviserDetailByIdHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\PatchAdviserDetailHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\PostAdviserDetailHttpTriggerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceTests\AdviserDetailPatchServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
