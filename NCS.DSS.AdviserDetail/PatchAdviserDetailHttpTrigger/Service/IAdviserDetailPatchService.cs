@@ -4,6 +4,6 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service
 {
     public interface IAdviserDetailPatchService
     {
-        Models.AdviserDetail Patch(string adviserdetailJson, AdviserDetailPatch adviserdetailPatch);
+        string Patch(string adviserDetailJson, AdviserDetailPatch adviserDetailPatch);
     }
 }

@@ -34,7 +34,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
         [Display(Name = "Patch", Description = "Ability to modify/update an Adviser Detail record.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "AdviserDetails/{adviserDetailId}")]HttpRequest req, ILogger log, string adviserDetailId,
             [Inject]IResourceHelper resourceHelper, 
-            [Inject]IPatchAdviserDetailHttpTriggerService AdviserDetailPatchService,
+            [Inject]IPatchAdviserDetailHttpTriggerService adviserDetailPatchService,
             [Inject]IValidate validate,
             [Inject]ILoggerHelper loggerHelper,
             [Inject]IHttpRequestHelper httpRequestHelper,
@@ -65,18 +65,18 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
                 loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
 
 
-            if (!Guid.TryParse(adviserDetailId, out var AdviserDetailGuid))
+            if (!Guid.TryParse(adviserDetailId, out var adviserDetailGuid))
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'adviserDetailId' to a Guid: {0}", adviserDetailId));
-                return httpResponseMessageHelper.BadRequest(AdviserDetailGuid);
+                return httpResponseMessageHelper.BadRequest(adviserDetailGuid);
             }
 
-            Models.AdviserDetailPatch AdviserDetailPatchRequest;
+            Models.AdviserDetailPatch adviserDetailPatchRequest;
 
             try
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to get resource from body of the request");
-                AdviserDetailPatchRequest = await httpRequestHelper.GetResourceFromRequest<Models.AdviserDetailPatch>(req);
+                adviserDetailPatchRequest = await httpRequestHelper.GetResourceFromRequest<Models.AdviserDetailPatch>(req);
             }
             catch (JsonException ex)
             {
@@ -84,35 +84,17 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
                 return httpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
-            if (AdviserDetailPatchRequest == null)
+            if (adviserDetailPatchRequest == null)
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, "Adviser Detail patch request is null");
                 return httpResponseMessageHelper.UnprocessableEntity(req);
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for Adviser Detail patch");
-            AdviserDetailPatchRequest.SetIds(touchpointId, subcontractorId);
-
-            
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Adviser Detail", AdviserDetailGuid));
-            var outcome = await AdviserDetailPatchService.GetAdviserDetailByIdAsync(AdviserDetailGuid);
-
-            if (outcome == null)
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Adviser Detail does not exist {0}", AdviserDetailGuid));
-                return httpResponseMessageHelper.NoContent(AdviserDetailGuid);
-            }
-            
-            var adviserdetailResource = AdviserDetailPatchService.PatchResource(outcome, AdviserDetailPatchRequest);
-
-            if (adviserdetailResource == null)
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Adviser Detail does not exist {0}", AdviserDetailGuid));
-                return httpResponseMessageHelper.NoContent(AdviserDetailGuid);
-            }
+            adviserDetailPatchRequest.SetIds(touchpointId, subcontractorId);
 
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
-            var errors = validate.ValidateResource(adviserdetailResource, false);
+            var errors = validate.ValidateResource(adviserDetailPatchRequest, false);
 
             if (errors != null && errors.Any())
             {
@@ -120,14 +102,30 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
                 return httpResponseMessageHelper.UnprocessableEntity(errors);
             }
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to update Adviser Detail {0}", AdviserDetailGuid));
-            var updatedAdviserDetail = await AdviserDetailPatchService.UpdateCosmosAsync(adviserdetailResource);
+            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Adviser Detail {0}", adviserDetailGuid));
+            var outcome = await adviserDetailPatchService.GetAdviserDetailByIdAsync(adviserDetailGuid);
 
+            if (outcome == null)
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Adviser Detail does not exist {0}", adviserDetailGuid));
+                return httpResponseMessageHelper.NoContent(adviserDetailGuid);
+            }
+            
+            var adviserDetailResource = adviserDetailPatchService.PatchResource(outcome, adviserDetailPatchRequest);
+
+            if (adviserDetailResource == null)
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Adviser Detail does not exist {0}", adviserDetailGuid));
+                return httpResponseMessageHelper.NoContent(adviserDetailGuid);
+            }
+
+            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to update Adviser Detail {0}", adviserDetailGuid));
+            var updatedAdviserDetail = await adviserDetailPatchService.UpdateCosmosAsync(adviserDetailResource, adviserDetailGuid);
 
             loggerHelper.LogMethodExit(log);
 
             return updatedAdviserDetail == null ?
-                httpResponseMessageHelper.BadRequest(AdviserDetailGuid) :
+                httpResponseMessageHelper.BadRequest(adviserDetailGuid) :
                 httpResponseMessageHelper.Ok(jsonHelper.SerializeObjectAndRenameIdProperty(updatedAdviserDetail, "id", "AdviserDetailId"));
 
         }

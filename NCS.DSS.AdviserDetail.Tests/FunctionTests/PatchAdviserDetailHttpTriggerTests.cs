@@ -36,13 +36,14 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         private IHttpResponseMessageHelper _httpResponseMessageHelper;
         private IJsonHelper _jsonHelper;
         private IPatchAdviserDetailHttpTriggerService _PatchAdviserDetailsHttpTriggerService;
-        private Models.AdviserDetail _adviserdetail;
+        private Models.AdviserDetail _adviserDetail;
         private AdviserDetailPatch _adviserdetailPatch;
+        private string _adviserDetailString;
 
         [SetUp]
         public void Setup()
         {
-            _adviserdetail = Substitute.For<Models.AdviserDetail>();
+            _adviserDetail = Substitute.For<Models.AdviserDetail>();
             _adviserdetailPatch = Substitute.For<AdviserDetailPatch>();
 
             _request = new DefaultHttpRequest(new DefaultHttpContext());
@@ -57,11 +58,12 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _log = Substitute.For<ILogger>();
             _resourceHelper = Substitute.For<IResourceHelper>();
             _PatchAdviserDetailsHttpTriggerService = Substitute.For<IPatchAdviserDetailHttpTriggerService>();
+            _adviserDetailString = JsonConvert.SerializeObject(_adviserDetail);
 
             _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
             _httpRequestHelper.GetDssApimUrl(_request).Returns("http://localhost:7071/");
             _httpRequestHelper.GetResourceFromRequest<AdviserDetailPatch>(_request).Returns(Task.FromResult(_adviserdetailPatch).Result);
-            _PatchAdviserDetailsHttpTriggerService.PatchResource(Arg.Any<string>(), _adviserdetailPatch).Returns(_adviserdetail);
+            _PatchAdviserDetailsHttpTriggerService.PatchResource(Arg.Any<string>(), _adviserdetailPatch).Returns(_adviserDetailString);
 
         }
 
@@ -100,9 +102,9 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         [Test]
         public async Task PatchAdviserDetailsHttpTrigger_ReturnsStatusCodeNoContent_WhenAdviserDetailsPatchCantBePatched()
         {
-            _PatchAdviserDetailsHttpTriggerService.GetAdviserDetailByIdAsync(Arg.Any<Guid>()).Returns(Task.FromResult("adviserdetail").Result);
+            _PatchAdviserDetailsHttpTriggerService.GetAdviserDetailByIdAsync(Arg.Any<Guid>()).Returns(Task.FromResult(_adviserDetailString).Result);
 
-            _PatchAdviserDetailsHttpTriggerService.PatchResource(Arg.Any<string>(), Arg.Any<Models.AdviserDetailPatch>()).Returns((Models.AdviserDetail)null);
+            _PatchAdviserDetailsHttpTriggerService.PatchResource(Arg.Any<string>(), Arg.Any<Models.AdviserDetailPatch>()).Returns((string)null);
 
             _httpResponseMessageHelper
                 .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
@@ -120,10 +122,9 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             _PatchAdviserDetailsHttpTriggerService
                 .GetAdviserDetailByIdAsync(Arg.Any<Guid>())
-                .Returns(Task.FromResult("AdviserDetail").Result);
+                .Returns(Task.FromResult(_adviserDetailString).Result);
 
-            _PatchAdviserDetailsHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.AdviserDetail>())
-                .Returns(Task.FromResult<Models.AdviserDetail>(null).Result);
+            _PatchAdviserDetailsHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(),Arg.Any<Guid>()).Returns(Task.FromResult<Models.AdviserDetail>(null).Result);
 
             _httpResponseMessageHelper
                 .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
@@ -140,9 +141,9 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             _PatchAdviserDetailsHttpTriggerService
                 .GetAdviserDetailByIdAsync(Arg.Any<Guid>())
-                .Returns(Task.FromResult("AdviserDetail").Result);
+                .Returns(Task.FromResult(_adviserDetailString).Result);
 
-            _PatchAdviserDetailsHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.AdviserDetail>())
+            _PatchAdviserDetailsHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>())
                 .Returns(Task.FromResult<Models.AdviserDetail>(null).Result);
 
             _httpResponseMessageHelper
@@ -160,10 +161,10 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             _PatchAdviserDetailsHttpTriggerService
                 .GetAdviserDetailByIdAsync(Arg.Any<Guid>())
-                .Returns(Task.FromResult("Outcome").Result);
+                .Returns(Task.FromResult(_adviserDetailString).Result);
             
-            _PatchAdviserDetailsHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.AdviserDetail>())
-                .Returns(Task.FromResult(_adviserdetail).Result);
+            _PatchAdviserDetailsHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>())
+                .Returns(Task.FromResult(_adviserDetail).Result);
 
             _httpResponseMessageHelper
                 .Ok(Arg.Any<string>()).Returns(x => new HttpResponseMessage(HttpStatusCode.OK));

@@ -17,27 +17,27 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service
             _adviserdetailPatchService = adviserdetailPatchService;
         }
 
-        public Models.AdviserDetail PatchResource(string adviserdetailJson, AdviserDetailPatch AdviserDetailPatch)
+        public string PatchResource(string adviserDetailJson, AdviserDetailPatch adviserDetailPatch)
         {
-            if (string.IsNullOrEmpty(adviserdetailJson))
+            if (string.IsNullOrEmpty(adviserDetailJson))
                 return null;
 
-            if (AdviserDetailPatch == null)
+            if (adviserDetailPatch == null)
                 return null;
 
-            AdviserDetailPatch.SetDefaultValues();
+            adviserDetailPatch.SetDefaultValues();
 
-            var updatedAdviserDetail = _adviserdetailPatchService.Patch(adviserdetailJson, AdviserDetailPatch);
+            var updatedAdviserDetail = _adviserdetailPatchService.Patch(adviserDetailJson, adviserDetailPatch);
 
             return updatedAdviserDetail;
         }
 
-        public async Task<Models.AdviserDetail> UpdateCosmosAsync(Models.AdviserDetail adviserdetail)
+        public async Task<Models.AdviserDetail> UpdateCosmosAsync(string adviserDetail, Guid adviserDetailId)
         {
-            if (adviserdetail == null)
+            if (adviserDetail == null)
                 return null;
 
-            var response = await _documentDbProvider.UpdateAdviserDetailAsync(adviserdetail);
+            var response = await _documentDbProvider.UpdateAdviserDetailAsync(adviserDetail, adviserDetailId);
 
             var responseStatusCode = response?.StatusCode;
 
@@ -46,9 +46,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service
 
         public async Task<string> GetAdviserDetailByIdAsync(Guid adviserDetailId)
         {
-            var AdviserDetail = await _documentDbProvider.GetAdviserDetailsByIdToUpdateAsync(adviserDetailId);
-
-            return AdviserDetail;
+            return await _documentDbProvider.GetAdviserDetailsByIdToUpdateAsync(adviserDetailId);
         }
 
     }

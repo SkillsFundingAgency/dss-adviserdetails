@@ -96,20 +96,21 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
 
         }
 
-        public async Task<ResourceResponse<Document>> UpdateAdviserDetailAsync(Models.AdviserDetail adviserDetail)
+        public async Task<ResourceResponse<Document>> UpdateAdviserDetailAsync(string adviserDetailJson, Guid adviserDetailId)
         {
-            var documentUri = DocumentDBHelper.CreateDocumentUri(adviserDetail.AdviserDetailId.GetValueOrDefault());
+            var documentUri = DocumentDBHelper.CreateDocumentUri(adviserDetailId);
 
             var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
 
-            var response = await client.ReplaceDocumentAsync(documentUri, adviserDetail);
+            var adviserDetailDocumentJObject = JObject.Parse(adviserDetailJson);
+
+            var response = await client.ReplaceDocumentAsync(documentUri, adviserDetailDocumentJObject);
 
             return response;
         }
-
 
     }
 }

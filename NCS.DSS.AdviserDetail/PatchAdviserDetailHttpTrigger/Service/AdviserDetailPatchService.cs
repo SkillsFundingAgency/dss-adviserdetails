@@ -6,44 +6,44 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service
 {
     public class AdviserDetailPatchService : IAdviserDetailPatchService
     {
-        private IJsonHelper _jsonHelper;
+        private readonly IJsonHelper _jsonHelper;
 
         public AdviserDetailPatchService(IJsonHelper jsonHelper)
         {
             _jsonHelper = jsonHelper;
         }
 
-        public Models.AdviserDetail Patch(string adviserdetailJson, AdviserDetailPatch adviserdetailPatch)
+        public string Patch(string adviserDetailJson, AdviserDetailPatch adviserDetailPatch)
         {
-            if (string.IsNullOrEmpty(adviserdetailJson))
+            if (string.IsNullOrEmpty(adviserDetailJson))
                 return null;
 
-            var obj = JObject.Parse(adviserdetailJson);
+            var obj = JObject.Parse(adviserDetailJson);
 
-            if (!string.IsNullOrEmpty(adviserdetailPatch.SubcontractorId))
+            if (!string.IsNullOrEmpty(adviserDetailPatch.SubcontractorId))
             {
                 if (obj["SubcontractorId"] == null)
-                    _jsonHelper.CreatePropertyOnJObject(obj, "SubcontractorId", adviserdetailPatch.SubcontractorId);
+                    _jsonHelper.CreatePropertyOnJObject(obj, "SubcontractorId", adviserDetailPatch.SubcontractorId);
                 else
-                    _jsonHelper.UpdatePropertyValue(obj["SubcontractorId"], adviserdetailPatch.SubcontractorId);
+                    _jsonHelper.UpdatePropertyValue(obj["SubcontractorId"], adviserDetailPatch.SubcontractorId);
             }
 
-            if (!string.IsNullOrEmpty(adviserdetailPatch.AdviserName))
-                _jsonHelper.UpdatePropertyValue(obj["AdviserName"], adviserdetailPatch.AdviserName);
+            if (!string.IsNullOrEmpty(adviserDetailPatch.AdviserName))
+                _jsonHelper.UpdatePropertyValue(obj["AdviserName"], adviserDetailPatch.AdviserName);
 
-            if (!string.IsNullOrEmpty(adviserdetailPatch.AdviserEmailAddress))
-                _jsonHelper.UpdatePropertyValue(obj["AdviserEmailAddress"], adviserdetailPatch.AdviserEmailAddress);
+            if (!string.IsNullOrEmpty(adviserDetailPatch.AdviserEmailAddress))
+                _jsonHelper.UpdatePropertyValue(obj["AdviserEmailAddress"], adviserDetailPatch.AdviserEmailAddress);
 
-            if (!string.IsNullOrEmpty(adviserdetailPatch.AdviserContactNumber))
-                _jsonHelper.UpdatePropertyValue(obj["AdviserContactNumber"], adviserdetailPatch.AdviserContactNumber);
+            if (!string.IsNullOrEmpty(adviserDetailPatch.AdviserContactNumber))
+                _jsonHelper.UpdatePropertyValue(obj["AdviserContactNumber"], adviserDetailPatch.AdviserContactNumber);
 
-            if (adviserdetailPatch.LastModifiedDate.HasValue)
-                _jsonHelper.UpdatePropertyValue(obj["LastModifiedDate"], adviserdetailPatch.LastModifiedDate);
+            if (adviserDetailPatch.LastModifiedDate.HasValue)
+                _jsonHelper.UpdatePropertyValue(obj["LastModifiedDate"], adviserDetailPatch.LastModifiedDate);
 
-            if (!string.IsNullOrEmpty(adviserdetailPatch.LastModifiedTouchpointId))
-                _jsonHelper.UpdatePropertyValue(obj["LastModifiedTouchpointId"], adviserdetailPatch.LastModifiedTouchpointId);
+            if (!string.IsNullOrEmpty(adviserDetailPatch.LastModifiedTouchpointId))
+                _jsonHelper.UpdatePropertyValue(obj["LastModifiedTouchpointId"], adviserDetailPatch.LastModifiedTouchpointId);
 
-            return obj.ToObject<Models.AdviserDetail>();
+            return obj.ToString();
 
         }
     }

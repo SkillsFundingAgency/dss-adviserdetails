@@ -22,14 +22,14 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         private IPatchAdviserDetailHttpTriggerService _adviserdetailPatchHttpTriggerService;
         private IAdviserDetailPatchService _adviserdetailPatchService;
         private IDocumentDBProvider _documentDbProvider;
-        private Models.AdviserDetail _adviserdetail;
-        private AdviserDetailPatch _adviserdetailPatch;
+        private Models.AdviserDetail _adviserDetail;
+        private AdviserDetailPatch _adviserDetailPatch;
         private string _json;
+        private string _adviserDetailString;
 
-        private readonly Guid _adviserdetailId = Guid.Parse("7E467BDB-213F-407A-B86A-1954053D3C24");
+        private readonly Guid _adviserDetailId = Guid.Parse("7E467BDB-213F-407A-B86A-1954053D3C24");
         private readonly Guid _customerId = Guid.Parse("58b43e3f-4a50-4900-9c82-a14682ee90fa");
-        private readonly Guid _interactionId = Guid.Parse("a06b29da-d949-4486-8b18-c0107dc8bae8");
-        private readonly Guid _actionPlanId = Guid.Parse("679897e6-c16a-41ba-90c9-f4fbd0a9f666");
+
 
         [SetUp]
         public void Setup()
@@ -37,10 +37,12 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             _documentDbProvider = Substitute.For<IDocumentDBProvider>();
             _adviserdetailPatchService = Substitute.For<IAdviserDetailPatchService>();
             _adviserdetailPatchHttpTriggerService = Substitute.For<PatchAdviserDetailHttpTriggerService>(_documentDbProvider, _adviserdetailPatchService);
-            _adviserdetail = Substitute.For<Models.AdviserDetail>();
-            _adviserdetailPatch = Substitute.For<AdviserDetailPatch>();
-            _json = JsonConvert.SerializeObject(_adviserdetailPatch);
-            _adviserdetailPatchService.Patch(_json, _adviserdetailPatch).Returns(_adviserdetail);
+            _adviserDetail = Substitute.For<Models.AdviserDetail>();
+            _adviserDetailPatch = Substitute.For<AdviserDetailPatch>();
+            _json = JsonConvert.SerializeObject(_adviserDetailPatch);
+            _adviserDetailString = JsonConvert.SerializeObject(_adviserDetail);
+
+            _adviserdetailPatchService.Patch(_json, _adviserDetailPatch).Returns(_adviserDetailString);
         }
 
         [Test]
@@ -70,7 +72,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             _adviserdetailPatchService.Patch(Arg.Any<string>(), Arg.Any<AdviserDetailPatch>()).ReturnsNull();
 
             // Act
-            var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserdetail);
+            var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);
 
             // Assert
             Assert.IsNull(result);
@@ -79,10 +81,10 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         [Test]
         public async Task  PatchAdviserDetailsHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenResourceCannotBeUpdated()
         {
-            _documentDbProvider.UpdateAdviserDetailAsync(Arg.Any<Models.AdviserDetail>()).ReturnsNull();
+            _documentDbProvider.UpdateAdviserDetailAsync(_adviserDetailString, _adviserDetailId).ReturnsNull();
 
             // Act
-            var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserdetail);
+            var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);
 
             // Assert
             Assert.IsNull(result);
@@ -94,7 +96,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             _documentDbProvider.CreateAdviserDetailAsync(Arg.Any<Models.AdviserDetail>()).Returns(Task.FromResult(new ResourceResponse<Document>(null)).Result);
 
             // Act
-            var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserdetail);
+            var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);
 
             // Assert
             Assert.IsNull(result);
@@ -125,10 +127,10 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.UpdateAdviserDetailAsync(Arg.Any<Models.AdviserDetail>()).Returns(Task.FromResult(resourceResponse).Result);
+            _documentDbProvider.UpdateAdviserDetailAsync(_adviserDetailString, _adviserDetailId).Returns(Task.FromResult(resourceResponse).Result);
 
             // Act
-            var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserdetail);
+            var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);
 
             // Assert
             Assert.IsNotNull(result);

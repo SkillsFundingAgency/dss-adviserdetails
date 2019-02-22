@@ -13,95 +13,106 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
     public class AdviserDetailPatchServiceTests
     {
         private IJsonHelper _jsonHelper;
-        private AdviserDetailPatchService _adviserdetailPatchService;
-        private AdviserDetailPatch _adviserdetailPatch;
+        private AdviserDetailPatchService _adviserDetailPatchService;
+        private AdviserDetailPatch _adviserDetailPatch;
         private string _json;
 
         [SetUp]
         public void Setup()
         {
             _jsonHelper = Substitute.For<JsonHelper>();
-            _adviserdetailPatchService = Substitute.For<AdviserDetailPatchService>(_jsonHelper);
-            _adviserdetailPatch = Substitute.For<AdviserDetailPatch>();
+            _adviserDetailPatchService = Substitute.For<AdviserDetailPatchService>(_jsonHelper);
+            _adviserDetailPatch = Substitute.For<AdviserDetailPatch>();
 
-            _json = JsonConvert.SerializeObject(_adviserdetailPatch);
+            _json = JsonConvert.SerializeObject(_adviserDetailPatch);
         }
 
         [Test]
         public void AdviserDetailPatchServiceTests_ReturnsNull_WhenAdviserDetailPatchIsNull()
         {
-            var result = _adviserdetailPatchService.Patch(string.Empty, Arg.Any<AdviserDetailPatch>());
+            var result = _adviserDetailPatchService.Patch(string.Empty, Arg.Any<AdviserDetailPatch>());
 
             // Assert
             Assert.IsNull(result);
         }
 
-        
         [Test]
         public void AdviserDetailPatchServiceTests_CheckAdviserDetailAdviserContactNumberIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new AdviserDetailPatch {  AdviserContactNumber = "1111" };
+            var adviserDetailPatch = new AdviserDetailPatch { AdviserContactNumber = "1111" };
 
-            var AdviserDetail = _adviserdetailPatchService.Patch(_json, diversityPatch);
+            var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
 
-            var AdviserDetailType = AdviserDetail.AdviserContactNumber;
-            
+            var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
+
             // Assert
-            Assert.AreEqual("1111", AdviserDetailType);
+            Assert.AreEqual("1111", adviserDetail.AdviserContactNumber);
         }
 
         [Test]
         public void AdviserDetailPatchServiceTests_CheckAdviserDetailAdviserEmailAddressIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new AdviserDetailPatch {  AdviserEmailAddress = "1@1.com" };
+            var adviserDetailPatch = new AdviserDetailPatch { AdviserEmailAddress = "1@1.com" };
 
-            var AdviserDetail = _adviserdetailPatchService.Patch(_json, diversityPatch);
+            var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
 
-            var AdviserDetailClaimedDate = AdviserDetail.AdviserEmailAddress;
+            var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
             // Assert
-            Assert.AreEqual("1@1.com", AdviserDetailClaimedDate);
+            Assert.AreEqual("1@1.com", adviserDetail.AdviserEmailAddress);
         }
 
         [Test]
         public void AdviserDetailPatchServiceTests_CheckAdviserDetailAdviserNameIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new Models.AdviserDetailPatch {  AdviserName = "name" };
+            var adviserDetailPatch = new Models.AdviserDetailPatch { AdviserName = "name" };
 
-            var AdviserDetail = _adviserdetailPatchService.Patch(_json, diversityPatch);
+            var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
 
-            var AdviserDetailEffectiveDate = AdviserDetail.AdviserName;
+            var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
             // Assert
-            Assert.AreEqual("name", AdviserDetailEffectiveDate);
+            Assert.AreEqual("name", adviserDetail.AdviserName);
         }
 
 
         [Test]
         public void AdviserDetailPatchServiceTests_CheckLastModifiedDateIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new AdviserDetailPatch { LastModifiedDate = DateTime.MaxValue };
+            var adviserDetailPatch = new AdviserDetailPatch { LastModifiedDate = DateTime.MaxValue };
 
-            var AdviserDetail = _adviserdetailPatchService.Patch(_json, diversityPatch);
+            var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
 
-            var lastModifiedDate = AdviserDetail.LastModifiedDate;
-            
+            var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
+
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, lastModifiedDate);
+            Assert.AreEqual(DateTime.MaxValue, adviserDetail.LastModifiedDate);
         }
 
         [Test]
         public void AdviserDetailPatchServiceTests_CheckLastModifiedByUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new AdviserDetailPatch { LastModifiedTouchpointId = "0000000111" };
+            var adviserDetailPatch = new AdviserDetailPatch { LastModifiedTouchpointId = "0000000111" };
 
-            var AdviserDetail = _adviserdetailPatchService.Patch(_json, diversityPatch);
+            var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
 
-            var lastModifiedTouchpointId = AdviserDetail.LastModifiedTouchpointId;
+            var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
             // Assert
-            Assert.AreEqual("0000000111", lastModifiedTouchpointId);
+            Assert.AreEqual("0000000111", adviserDetail.LastModifiedTouchpointId);
         }
-        
+
+        [Test]
+        public void AdviserDetailPatchServiceTests_CheckSubcontractorIdUpdated_WhenPatchIsCalled()
+        {
+            var adviserDetailPatch = new AdviserDetailPatch { SubcontractorId = "0000000111" };
+
+            var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
+
+            var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
+
+            // Assert
+            Assert.AreEqual("0000000111", adviserDetail.SubcontractorId);
+        }
     }
 }
