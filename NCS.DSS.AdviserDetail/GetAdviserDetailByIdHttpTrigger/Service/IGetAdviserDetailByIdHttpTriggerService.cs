@@ -5,6 +5,6 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Service
 {
     public interface IGetAdviserDetailByIdHttpTriggerService
     {
-        Task<Models.AdviserDetail> GetAdviserDetailByIdAsync(Guid adviserDetailId);
+        Task<Models.AdviserDetail> GetAdviserDetailAsync(Guid adviserDetailId);
     }
 }

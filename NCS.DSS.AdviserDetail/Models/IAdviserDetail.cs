@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NCS.DSS.AdviserDetail.Models
+namespace NCS.DSS.AdviserDetails.Models
 {
     public interface IAdviserDetail
     {
@@ -11,6 +11,5 @@ namespace NCS.DSS.AdviserDetail.Models
         string LastModifiedTouchpointId { get; set; }
 
         void SetDefaultValues();
-
     }
 }

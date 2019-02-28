@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using NCS.DSS.AdviserDetail.Annotations;
+using DFC.Swagger.Standard.Annotations;
+using NCS.DSS.AdviserDetails.Models;
 
 namespace NCS.DSS.AdviserDetail.Models
 {
     public class AdviserDetailPatch : IAdviserDetail
     {
+
         [StringLength(100)]
         [RegularExpression(@"^[a-zA-Z]+(([\s'\,\.\-][a-zA-Z])?[a-zA-Z]*)*$")]
         [Display(Description = "Name of the adviser")]
@@ -32,10 +34,24 @@ namespace NCS.DSS.AdviserDetail.Models
         [Example(Description = "0000000001")]
         public string LastModifiedTouchpointId { get; set; }
 
+        [StringLength(50)]
+        [Display(Description = "Identifier supplied by the touchpoint to indicate their subcontractor")]
+        [Example(Description = "01234567899876543210")]
+        public string SubcontractorId { get; set; }
+
+
+
         public void SetDefaultValues()
         {
             if (!LastModifiedDate.HasValue)
                 LastModifiedDate = DateTime.UtcNow;
         }
+
+        public void SetIds(string touchpointId, string subcontractorId)
+        {
+            LastModifiedTouchpointId = touchpointId;
+            SubcontractorId = subcontractorId;
+        }
+
     }
 }

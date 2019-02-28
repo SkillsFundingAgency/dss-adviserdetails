@@ -6,12 +6,17 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Service
 {
     public class GetAdviserDetailByIdHttpTriggerService : IGetAdviserDetailByIdHttpTriggerService
     {
-        public async Task<Models.AdviserDetail> GetAdviserDetailByIdAsync(Guid adviserDetailId)
-        {
-            var documentDbProvider = new DocumentDBProvider();
-            var adviserDetail = await documentDbProvider.GetAdviserDetailByIdAsync(adviserDetailId);
+        private readonly IDocumentDBProvider _documentDbProvider;
 
-            return adviserDetail;
+        public GetAdviserDetailByIdHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        {
+            _documentDbProvider = documentDbProvider;
+        }
+        public async Task<Models.AdviserDetail> GetAdviserDetailAsync(Guid adviserDetailId)
+        {
+            var AdviserDetail = await _documentDbProvider.GetAdviserDetailByIdAsync(adviserDetailId);
+
+            return AdviserDetail;
         }
     }
 }
