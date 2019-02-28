@@ -71,8 +71,13 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 
             if (adviserDetail == null)
                 return HttpResponseMessageHelper.NoContent(adviserDetailGuid);
+
+            var patchedAdviserDetail = adviserDetailsPatchService.PatchResource(adviserDetail, adviserDetailPatchRequest);
+
+            if (patchedAdviserDetail == null)
+                return HttpResponseMessageHelper.NoContent(adviserDetailGuid);
             
-            var updatedAdviserDetail = await adviserDetailsPatchService.UpdateAsync(adviserDetail, adviserDetailPatchRequest);
+            var updatedAdviserDetail = await adviserDetailsPatchService.UpdateCosmosAsync(patchedAdviserDetail, adviserDetailGuid);
 
             return updatedAdviserDetail == null
                 ? HttpResponseMessageHelper.BadRequest(adviserDetailGuid)

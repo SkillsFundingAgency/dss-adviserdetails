@@ -3,13 +3,12 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using NCS.DSS.AdviserDetail.Cosmos.Helper;
 using NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace NCS.DSS.AdviserDetail.Tests
+namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
 {
     [TestFixture]
     public class GetAdviserDetailByIdHttpTriggerTests

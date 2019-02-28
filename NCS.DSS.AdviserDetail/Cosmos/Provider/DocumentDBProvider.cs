@@ -6,6 +6,7 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using NCS.DSS.AdviserDetail.Cosmos.Client;
 using NCS.DSS.AdviserDetail.Cosmos.Helper;
+using Newtonsoft.Json.Linq;
 
 namespace NCS.DSS.AdviserDetail.Cosmos.Provider
 {
@@ -33,6 +34,25 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
 
         }
 
+        public async Task<string> GetAdviserDetailsByIdToUpdateAsync(Guid adviserDetailId)
+        {
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
+
+            var client = DocumentDBClient.CreateDocumentClient();
+
+            var adviserdetailForCustomerQuery = client
+                ?.CreateDocumentQuery<Models.AdviserDetail>(collectionUri, new FeedOptions { MaxItemCount = 1 })
+                .Where(x => x.AdviserDetailId == adviserDetailId)
+                .AsDocumentQuery();
+
+            if (adviserdetailForCustomerQuery == null)
+                return null;
+
+            var adviserDetail = await adviserdetailForCustomerQuery.ExecuteNextAsync();
+
+            return adviserDetail?.FirstOrDefault()?.ToString();
+        }
+
         public async Task<ResourceResponse<Document>> CreateAdviserDetailAsync(Models.AdviserDetail adviserDetail)
         {
 
@@ -49,16 +69,18 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
 
         }
 
-        public async Task<ResourceResponse<Document>> UpdateAdviserDetailAsync(Models.AdviserDetail adviserDetail)
+        public async Task<ResourceResponse<Document>> UpdateAdviserDetailAsync(string adviserDetailJson, Guid adviserDetailId)
         {
-            var documentUri = DocumentDBHelper.CreateDocumentUri(adviserDetail.AdviserDetailId.GetValueOrDefault());
+            var documentUri = DocumentDBHelper.CreateDocumentUri(adviserDetailId);
 
             var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
 
-            var response = await client.ReplaceDocumentAsync(documentUri, adviserDetail);
+            var adviserDetailDocumentJObject = JObject.Parse(adviserDetailJson);
+
+            var response = await client.ReplaceDocumentAsync(documentUri, adviserDetailDocumentJObject);
 
             return response;
         }

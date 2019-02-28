@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
+using NCS.DSS.AdviserDetail.Models;
 
 namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service
 {
     public interface IPatchAdviserDetailHttpTriggerService
     {
-        Task<Models.AdviserDetail> UpdateAsync(Models.AdviserDetail adviserDetail, Models.AdviserDetailPatch adviserDetailPatch);
-        Task<Models.AdviserDetail> GetAdviserDetailByIdAsync(Guid adviserDetailId);
+        string PatchResource(string adviserDetailJson, AdviserDetailPatch adviserDetailPatch);
+        Task<Models.AdviserDetail> UpdateCosmosAsync(string adviserDetail, Guid adviserDetailId);
+        Task<string> GetAdviserDetailByIdAsync(Guid adviserDetailId);
     }
 }
