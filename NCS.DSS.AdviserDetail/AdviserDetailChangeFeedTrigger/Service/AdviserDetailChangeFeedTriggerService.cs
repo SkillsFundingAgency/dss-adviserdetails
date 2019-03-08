@@ -10,7 +10,7 @@ namespace NCS.DSS.AdviserDetail.AdviserDetailChangeFeedTrigger.Service
     public class AdviserDetailChangeFeedTriggerService : IAdviserDetailChangeFeedTriggerService
     {
         private readonly string _queueName = Environment.GetEnvironmentVariable("ChangeFeedQueueName");
-        private readonly string _serviceBusConnectionString = Environment.GetEnvironmentVariable("ChangeFeedServiceBusConnectionString");
+        private readonly string _serviceBusConnectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
 
         public async Task SendMessageToChangeFeedQueueAsync(Document document)
         {
