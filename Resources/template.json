@@ -20,6 +20,30 @@
     "functionAppNames": {
       "type": "array"
     },
+    "serviceBusAccessKey": {
+      "type": "string",
+      "metadata": {
+        "comment": "included to maintain compatiblity with release task group which changed when adding service bus to v2"
+      }
+    },
+    "serviceBusAccessKeyName": {
+      "type": "string",
+      "metadata": {
+        "comment": "included to maintain compatiblity with release task group which changed when adding service bus to v2"
+      }
+    },
+    "serviceBusBaseAddress": {
+      "type": "string",
+      "metadata": {
+        "comment": "included to maintain compatiblity with release task group which changed when adding service bus to v2"
+      }
+    },
+    "serviceBusQueueName": {
+      "type": "string",
+      "metadata": {
+        "comment": "included to maintain compatiblity with release task group which changed when adding service bus to v2"
+      }
+    },
     "sharedAppServicePlanName": {
       "type": "string"
     },
