@@ -82,6 +82,9 @@
                 "cosmosDbKey": {
                   "value": "[parameters('cosmosDbKey')]"
                 },
+                "serviceBusConnectionString": {
+                  "value": "[parameters('serviceBusConnectionString')]"
+                },
                 "storageAccountName": {
                   "value": "[parameters('storageAccountName')]"
                 },

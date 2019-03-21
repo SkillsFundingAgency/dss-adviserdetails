@@ -23,6 +23,9 @@
     "functionAppName": {
       "type": "string"
     },
+    "serviceBusConnectionString": {
+      "type": "string"
+    },
     "storageAccountName": {
       "type": "string"
     },
@@ -68,6 +71,10 @@
               "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
             },
             {
+              "name": "AdviserDetailConnectionString",
+              "value": "[concat('AccountEndpoint=', parameters('cosmosDbEndpoint'), '/;AccountKey=', parameters('cosmosDbKey'), ';')]"
+            },
+            {
               "name": "CollectionId",
               "value": "[parameters('cosmosDbCollectionId')]"
             },
@@ -76,14 +83,21 @@
               "value": "[parameters('cosmosDbDatabaseId')]"
             },
             {
-              "name": "Endpoint",
-              "value": "[parameters('cosmosDbEndpoint')]"
+              "name": "LeaseCollectionName",
+              "value": "adviserdetail-lease"
             },
             {
-              "name": "Key",
-              "value": "[parameters('cosmosDbKey')]"
+              "name": "LeaseCollectionPrefix",
+              "value": "adviserdetailChangeFeedPrefix"
+            },
+            {
+              "name": "ServiceBusConnectionString",
+              "value": "[parameters('serviceBusConnectionString')]"
+            },
+            {
+              "name": "ChangeFeedQueueName",
+              "value": "dss.changefeedqueue"
             }
-
           ]
         }
       }
