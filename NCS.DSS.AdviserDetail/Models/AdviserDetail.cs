@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using DFC.JSON.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.AdviserDetails.Models;
 
@@ -44,6 +45,8 @@ namespace NCS.DSS.AdviserDetail.Models
         [Example(Description = "01234567899876543210")]
         public string SubcontractorId { get; set; }
 
+        [JsonIgnoreOnSerialize]
+        public string CreatedBy { get; set; }
 
         public void SetDefaultValues()
         {
@@ -59,6 +62,7 @@ namespace NCS.DSS.AdviserDetail.Models
             AdviserDetailId = Guid.NewGuid();
             LastModifiedTouchpointId = touchpointId;
             SubcontractorId = subcontractorId;
+            CreatedBy = touchpointId;
         }
     }
 }
