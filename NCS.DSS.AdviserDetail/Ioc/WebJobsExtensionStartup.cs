@@ -6,7 +6,6 @@ using DFC.Swagger.Standard;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using NCS.DSS.AdviserDetail.AdviserDetailChangeFeedTrigger.Service;
 using NCS.DSS.AdviserDetail.Cosmos.Helper;
 using NCS.DSS.AdviserDetail.Cosmos.Provider;
 using NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Service;
@@ -39,7 +38,6 @@ namespace NCS.DSS.AdviserDetail.Ioc
             builder.Services.AddScoped<IPatchAdviserDetailHttpTriggerService, PatchAdviserDetailHttpTriggerService>();
             builder.Services.AddScoped<IPatchAdviserDetailHttpTriggerService, PatchAdviserDetailHttpTriggerService>();
             builder.Services.AddScoped<IAdviserDetailPatchService, AdviserDetailPatchService>();
-            builder.Services.AddScoped<IAdviserDetailChangeFeedTriggerService, AdviserDetailChangeFeedTriggerService>();
         }
     }
 }
