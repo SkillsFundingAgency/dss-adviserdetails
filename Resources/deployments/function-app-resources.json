@@ -83,20 +83,8 @@
               "value": "[parameters('cosmosDbDatabaseId')]"
             },
             {
-              "name": "LeaseCollectionName",
-              "value": "adviserdetail-lease"
-            },
-            {
-              "name": "LeaseCollectionPrefix",
-              "value": "adviserdetailChangeFeedPrefix"
-            },
-            {
               "name": "ServiceBusConnectionString",
               "value": "[parameters('serviceBusConnectionString')]"
-            },
-            {
-              "name": "ChangeFeedQueueName",
-              "value": "dss.changefeedqueue"
             }
           ]
         }
