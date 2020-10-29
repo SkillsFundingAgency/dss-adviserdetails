@@ -1,10 +1,10 @@
-﻿using System;
-using DFC.JSON.Standard;
+﻿using DFC.JSON.Standard;
+using Moq;
 using NCS.DSS.AdviserDetail.Models;
 using NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service;
 using Newtonsoft.Json;
-using NSubstitute;
 using NUnit.Framework;
+using System;
 
 namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
 {
@@ -20,17 +20,17 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         [SetUp]
         public void Setup()
         {
-            _jsonHelper = Substitute.For<JsonHelper>();
-            _adviserDetailPatchService = Substitute.For<AdviserDetailPatchService>(_jsonHelper);
-            _adviserDetailPatch = Substitute.For<AdviserDetailPatch>();
-
+            _jsonHelper = new JsonHelper();
+            _adviserDetailPatchService = new AdviserDetailPatchService(_jsonHelper);
+            _adviserDetailPatch = new AdviserDetailPatch();
             _json = JsonConvert.SerializeObject(_adviserDetailPatch);
         }
 
         [Test]
         public void AdviserDetailPatchServiceTests_ReturnsNull_WhenAdviserDetailPatchIsNull()
         {
-            var result = _adviserDetailPatchService.Patch(string.Empty, Arg.Any<AdviserDetailPatch>());
+            // Act
+            var result = _adviserDetailPatchService.Patch(string.Empty, It.IsAny<AdviserDetailPatch>());
 
             // Assert
             Assert.IsNull(result);
@@ -39,10 +39,11 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         [Test]
         public void AdviserDetailPatchServiceTests_CheckAdviserDetailAdviserContactNumberIsUpdated_WhenPatchIsCalled()
         {
+            // Arrange
             var adviserDetailPatch = new AdviserDetailPatch { AdviserContactNumber = "1111" };
-
+           
+            // Act
             var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
-
             var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
             // Assert
@@ -52,10 +53,11 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         [Test]
         public void AdviserDetailPatchServiceTests_CheckAdviserDetailAdviserEmailAddressIsUpdated_WhenPatchIsCalled()
         {
+            // Arrange
             var adviserDetailPatch = new AdviserDetailPatch { AdviserEmailAddress = "1@1.com" };
 
+            // Act
             var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
-
             var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
             // Assert
@@ -65,10 +67,11 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         [Test]
         public void AdviserDetailPatchServiceTests_CheckAdviserDetailAdviserNameIsUpdated_WhenPatchIsCalled()
         {
+            // Arrange
             var adviserDetailPatch = new Models.AdviserDetailPatch { AdviserName = "name" };
 
+            // Act
             var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
-
             var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
             // Assert
@@ -79,10 +82,11 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         [Test]
         public void AdviserDetailPatchServiceTests_CheckLastModifiedDateIsUpdated_WhenPatchIsCalled()
         {
+            // Arrange
             var adviserDetailPatch = new AdviserDetailPatch { LastModifiedDate = DateTime.MaxValue };
 
+            // Act
             var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
-
             var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
             // Assert
@@ -92,10 +96,11 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         [Test]
         public void AdviserDetailPatchServiceTests_CheckLastModifiedByUpdated_WhenPatchIsCalled()
         {
+            // Arrange
             var adviserDetailPatch = new AdviserDetailPatch { LastModifiedTouchpointId = "0000000111" };
 
+            // Act
             var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
-
             var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
             // Assert
@@ -105,10 +110,11 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         [Test]
         public void AdviserDetailPatchServiceTests_CheckSubcontractorIdUpdated_WhenPatchIsCalled()
         {
+            // Arrange
             var adviserDetailPatch = new AdviserDetailPatch { SubcontractorId = "0000000111" };
 
+            // Act
             var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
-
             var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
             // Assert

@@ -1,21 +1,21 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using NCS.DSS.AdviserDetail.Validation;
+﻿using NCS.DSS.AdviserDetail.Validation;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace NCS.DSS.AdviserDetail.Tests.ValidationTests
 {
     [TestFixture]
     public class ValidateTests
     {
-
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenAdviserDetailIsNotSuppliedForPost()
         {
+            // Arrange
             var AdviserDetail = new Models.AdviserDetail();
-
             var validation = new Validate();
 
+            // Act
             var result = validation.ValidateResource(AdviserDetail, true);
 
             // Assert
@@ -27,13 +27,14 @@ namespace NCS.DSS.AdviserDetail.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenNameIsNotSuppliedForPost()
         {
+            // Arrange
             var AdviserDetail = new Models.AdviserDetail
             {
                 AdviserContactNumber = "1111"
             };
-
             var validation = new Validate();
 
+            // Act
             var result = validation.ValidateResource(AdviserDetail, true);
 
             // Assert
@@ -41,8 +42,5 @@ namespace NCS.DSS.AdviserDetail.Tests.ValidationTests
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Count);
         }
-
-        
-
     }
 }
