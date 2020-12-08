@@ -1,11 +1,4 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using DFC.Common.Standard.Logging;
-using DFC.Functions.DI.Standard.Attributes;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
@@ -18,11 +11,42 @@ using NCS.DSS.AdviserDetail.Cosmos.Helper;
 using NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Validation;
 using Newtonsoft.Json;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
 {
-    public static class PostAdviserDetailHttpTrigger
+    public class PostAdviserDetailHttpTrigger
     {
+        private IResourceHelper _resourceHelper;
+        private IPostAdviserDetailHttpTriggerService _AdviserDetailPostService;
+        private IValidate _validate;
+        private ILoggerHelper _loggerHelper;
+        private IHttpRequestHelper _httpRequestHelper;
+        private IHttpResponseMessageHelper _httpResponseMessageHelper;
+        private IJsonHelper _jsonHelper;
+
+        public PostAdviserDetailHttpTrigger(IResourceHelper resourceHelper,
+            IPostAdviserDetailHttpTriggerService AdviserDetailPostService,
+            IValidate validate,
+            ILoggerHelper loggerHelper,
+            IHttpRequestHelper httpRequestHelper,
+            IHttpResponseMessageHelper httpResponseMessageHelper,
+            IJsonHelper jsonHelper)
+        {
+            _resourceHelper = resourceHelper;
+            _AdviserDetailPostService = AdviserDetailPostService;
+            _validate = validate;
+            _loggerHelper = loggerHelper;
+            _httpRequestHelper = httpRequestHelper;
+            _httpResponseMessageHelper = httpResponseMessageHelper;
+            _jsonHelper = jsonHelper;
+        }
+
         [FunctionName("Post")]
         [ProducesResponseType(typeof(Models.AdviserDetail),200)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Adviser Detail Created", ShowSchema = true)]
@@ -32,18 +56,11 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new Adviser Detail for a customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "AdviserDetails")]HttpRequest req, ILogger log,
-            [Inject]IResourceHelper resourceHelper,
-            [Inject]IPostAdviserDetailHttpTriggerService AdviserDetailPostService,
-            [Inject]IValidate validate,
-            [Inject]ILoggerHelper loggerHelper,
-            [Inject]IHttpRequestHelper httpRequestHelper,
-            [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
-            [Inject]IJsonHelper jsonHelper)
+        public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "AdviserDetails")]HttpRequest req, ILogger log)
         {
-            loggerHelper.LogMethodEnter(log);
+            _loggerHelper.LogMethodEnter(log);
 
-            var correlationId = httpRequestHelper.GetDssCorrelationId(req);
+            var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
                 log.LogInformation("Unable to locate 'DssCorrelationId' in request header");
 
@@ -53,57 +70,57 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
                 correlationGuid = Guid.NewGuid();
             }
 
-            var touchpointId = httpRequestHelper.GetDssTouchpointId(req);
+            var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
                 log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header.");
-                return httpResponseMessageHelper.BadRequest();
+                return _httpResponseMessageHelper.BadRequest();
             }
 
-            var subcontractorId = httpRequestHelper.GetDssSubcontractorId(req);
+            var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
-                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
+                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
 
             Models.AdviserDetail AdviserDetailRequest;
 
             try
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to get resource from body of the request");
-                AdviserDetailRequest = await httpRequestHelper.GetResourceFromRequest<Models.AdviserDetail>(req);
+                _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to get resource from body of the request");
+                AdviserDetailRequest = await _httpRequestHelper.GetResourceFromRequest<Models.AdviserDetail>(req);
             }
             catch (JsonException ex)
             {
-                loggerHelper.LogError(log, correlationGuid, "Unable to retrieve body from req", ex);
-                return httpResponseMessageHelper.UnprocessableEntity(ex);
+                _loggerHelper.LogError(log, correlationGuid, "Unable to retrieve body from req", ex);
+                return _httpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
             if (AdviserDetailRequest == null)
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, "Adviser Detail request is null");
-                return httpResponseMessageHelper.UnprocessableEntity(req);
+                _loggerHelper.LogInformationMessage(log, correlationGuid, "Adviser Detail request is null");
+                return _httpResponseMessageHelper.UnprocessableEntity();
             }
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for Adviser Detail");
+            _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for Adviser Detail");
             AdviserDetailRequest.SetIds(touchpointId, subcontractorId);
 
-                     
-            loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
-            var errors = validate.ValidateResource(AdviserDetailRequest, true);
+
+            _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
+            var errors = _validate.ValidateResource(AdviserDetailRequest, true);
 
             if (errors != null && errors.Any())
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, "validation errors with resource");
-                return httpResponseMessageHelper.UnprocessableEntity(errors);
+                _loggerHelper.LogInformationMessage(log, correlationGuid, "validation errors with resource");
+                return _httpResponseMessageHelper.UnprocessableEntity(errors);
             }
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to Create Adviser Detail"));
-            var adviserdetail = await AdviserDetailPostService.CreateAsync(AdviserDetailRequest);
+            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to Create Adviser Detail"));
+            var adviserdetail = await _AdviserDetailPostService.CreateAsync(AdviserDetailRequest);
 
-            loggerHelper.LogMethodExit(log);
+            _loggerHelper.LogMethodExit(log);
 
             return adviserdetail == null
-                ? httpResponseMessageHelper.BadRequest()
-                : httpResponseMessageHelper.Created(jsonHelper.SerializeObjectAndRenameIdProperty(adviserdetail, "id", "AdviserDetailId"));
+                ? _httpResponseMessageHelper.BadRequest()
+                : _httpResponseMessageHelper.Created(_jsonHelper.SerializeObjectAndRenameIdProperty(adviserdetail, "id", "AdviserDetailId"));
 
         }
     }

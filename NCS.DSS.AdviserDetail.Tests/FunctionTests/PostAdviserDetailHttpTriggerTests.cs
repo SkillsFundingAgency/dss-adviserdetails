@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using DFC.Common.Standard.Logging;
+﻿using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
+using Moq;
 using NCS.DSS.AdviserDetail.Cosmos.Helper;
+using NCS.DSS.AdviserDetail.Cosmos.Provider;
 using NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Validation;
-using Newtonsoft.Json;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
+using NCS.DSS.AdviserDetails.Models;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
 {
@@ -26,51 +25,55 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
 
         private const string ValidAdviserDetailId = "cff8080e-1da2-42bd-9b63-8f235aad9d86";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
-
-        private ILogger _log;
+        private const string TouchpointIdHeaderParamKey = "touchpointId";
+        private const string ApimUrlHeaderParameterKey = "apimurl";
+        private string ApimUrlHeaderParameterValue = "http://localhost:7071/";
+        private string TouchpointIdHeaderParamValue = "9000000000";
+        private Mock<ILogger> _log;
         private HttpRequest _request;
-        private IResourceHelper _resourceHelper;
+        private Mock<IResourceHelper> _resourceHelper;
         private IValidate _validate;
-        private ILoggerHelper _loggerHelper;
-        private IHttpRequestHelper _httpRequestHelper;
+        private Mock<ILoggerHelper> _loggerHelper;
+        private Mock<IHttpRequestHelper> _httpRequestHelper;
         private IHttpResponseMessageHelper _httpResponseMessageHelper;
         private IJsonHelper _jsonHelper;
-
-        private IPostAdviserDetailHttpTriggerService _postAdviserDetailHttpTriggerService;
+        private Mock<IPostAdviserDetailHttpTriggerService> _postAdviserDetailHttpTriggerService;
+        private Mock<IDocumentDBProvider> _provider;
         private Models.AdviserDetail _adviserdetail;
+        private PostAdviserDetailHttpTrigger.Function.PostAdviserDetailHttpTrigger _function;
 
         [SetUp]
         public void Setup()
         {
-            _adviserdetail = Substitute.For<Models.AdviserDetail>();
+            _adviserdetail = new Models.AdviserDetail() { AdviserName = "testing" };
+            _request = new DefaultHttpRequest(new DefaultHttpContext() );
 
-            _request = new DefaultHttpRequest(new DefaultHttpContext());
-
-            _log = Substitute.For<ILogger>();
-            _resourceHelper = Substitute.For<IResourceHelper>();
-            _validate = Substitute.For<IValidate>();
-            _loggerHelper = Substitute.For<ILoggerHelper>();
-            _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
-            _httpResponseMessageHelper = Substitute.For<IHttpResponseMessageHelper>();
-            _jsonHelper = Substitute.For<IJsonHelper>();
-            _log = Substitute.For<ILogger>();
-            _resourceHelper = Substitute.For<IResourceHelper>();
-            _postAdviserDetailHttpTriggerService = Substitute.For<IPostAdviserDetailHttpTriggerService>();
-
-            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
-            
-            _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
-            _httpRequestHelper.GetDssApimUrl(_request).Returns("http://localhost:7071/");
-            _httpRequestHelper.GetResourceFromRequest<Models.AdviserDetail>(_request).Returns(Task.FromResult(_adviserdetail).Result);
+            _request.Headers.Add(TouchpointIdHeaderParamKey, TouchpointIdHeaderParamValue);
+            _request.Headers.Add(ApimUrlHeaderParameterKey, ApimUrlHeaderParameterValue);
+            _log = new Mock<ILogger>();
+            _resourceHelper = new Mock<IResourceHelper>();
+            _validate = new Validate();
+            _loggerHelper = new Mock<ILoggerHelper>();
+            _httpRequestHelper = new Mock<IHttpRequestHelper>();
+            _httpResponseMessageHelper = new HttpResponseMessageHelper();
+            _jsonHelper = new JsonHelper();
+            _provider = new Mock<IDocumentDBProvider>();
+            _postAdviserDetailHttpTriggerService = new Mock<IPostAdviserDetailHttpTriggerService>();
+            _function = new PostAdviserDetailHttpTrigger.Function.PostAdviserDetailHttpTrigger(
+                _resourceHelper.Object, 
+                _postAdviserDetailHttpTriggerService.Object,
+                _validate, 
+                _loggerHelper.Object, 
+                _httpRequestHelper.Object, 
+                _httpResponseMessageHelper, 
+                _jsonHelper);
         }
 
         [Test]
         public async Task PostAdviserDetailHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
-            _httpRequestHelper.GetDssTouchpointId(_request).Returns((string)null);
-
-            _httpResponseMessageHelper
-                .BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+            // Arrange
+            _httpRequestHelper.Setup(x=>x.GetDssTouchpointId(_request)).Returns((string)null);
 
             // Act
             var result = await RunFunction(ValidAdviserDetailId);
@@ -80,31 +83,29 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
-        [Test]
-        public async Task PostAdviserDetailHttpTrigger_ReturnsStatusCodeBadRequest_WhenAdviserDetailIsInvalid()
-        {
-            _httpResponseMessageHelper
-                .BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
-
-            // Act
-            var result = await RunFunction(ValidAdviserDetailId);
-
-            // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
-        }
-
-        
-        
         [Test]
         public async Task PostAdviserDetailHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenAdviserDetailHasFailedValidation()
         {
-            var validationResults = new List<ValidationResult> { new ValidationResult("Adviser Name is a required field") };
-            _validate.ValidateResource(Arg.Any<Models.AdviserDetail>(), true).Returns(validationResults);
+            // Arrange
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult<Models.AdviserDetail>(_adviserdetail));
+            _postAdviserDetailHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult<Models.AdviserDetail>(_adviserdetail));
+            var validate = new Mock<IValidate>();
+            List<System.ComponentModel.DataAnnotations.ValidationResult> err = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
+            err.Add(new System.ComponentModel.DataAnnotations.ValidationResult("some error"));
+            validate.Setup(x => x.ValidateResource(It.IsAny<IAdviserDetail>(), It.IsAny<bool>())).Returns(err);
+            _function = new PostAdviserDetailHttpTrigger.Function.PostAdviserDetailHttpTrigger(
+                _resourceHelper.Object,
+                _postAdviserDetailHttpTriggerService.Object,
+                validate.Object,
+                _loggerHelper.Object,
+                _httpRequestHelper.Object,
+                _httpResponseMessageHelper,
+                _jsonHelper);
 
-            _httpResponseMessageHelper
-                .UnprocessableEntity(Arg.Any<List<ValidationResult>>()).Returns(x => new HttpResponseMessage((HttpStatusCode)422));
-
+            // Act
             var result = await RunFunction(ValidAdviserDetailId);
 
             // Assert
@@ -115,11 +116,14 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         [Test]
         public async Task PostAdviserDetailHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenAdviserDetailRequestIsInvalid()
         {
-            _httpRequestHelper.GetResourceFromRequest<Models.AdviserDetail>(_request).Throws(new JsonException());
+            // Arrange
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult<Models.AdviserDetail>(null));
+            _postAdviserDetailHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult<Models.AdviserDetail>(null));
 
-            _httpResponseMessageHelper
-                .UnprocessableEntity(Arg.Any<JsonException>()).Returns(x => new HttpResponseMessage((HttpStatusCode)422));
-
+            // Act
             var result = await RunFunction(ValidAdviserDetailId);
 
             // Assert
@@ -127,32 +131,20 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             Assert.AreEqual((HttpStatusCode)422, result.StatusCode);
         }
 
-        
+
 
         [Test]
         public async Task PostAdviserDetailHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToCreateAdviserDetailRecord()
         {
-            _postAdviserDetailHttpTriggerService.CreateAsync(Arg.Any<Models.AdviserDetail>()).Returns(Task.FromResult<Models.AdviserDetail>(null).Result);
+            // Arrange
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult(new Models.AdviserDetail() { AdviserName = "some name" }));
+            _postAdviserDetailHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult<Models.AdviserDetail>(null));
 
-            _httpResponseMessageHelper
-                .BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
-
+            // Act
             var result = await RunFunction(ValidAdviserDetailId);
-
-            // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
-        }
-
-        [Test]
-        public async Task PostAdviserDetailHttpTrigger_ReturnsBadRequestStatusCode_WhenRequestIsInValid()
-        {
-            _postAdviserDetailHttpTriggerService.CreateAsync(Arg.Any<Models.AdviserDetail>()).Returns(Task.FromResult<Models.AdviserDetail>(null).Result);
-
-            _httpResponseMessageHelper
-                .BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
-
-            var result = await RunFunction(InValidId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -162,11 +154,14 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         [Test]
         public async Task PostAdviserDetailHttpTrigger_ReturnsStatusCodeCreated_WhenRequestIsValid()
         {
-            _postAdviserDetailHttpTriggerService.CreateAsync(Arg.Any<Models.AdviserDetail>()).Returns(Task.FromResult<Models.AdviserDetail>(_adviserdetail).Result);
+            // Arrange
+            _httpRequestHelper.Setup(x=>x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _httpRequestHelper.Setup(x=>x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
+            _httpRequestHelper.Setup(x=>x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult(_adviserdetail));
+            _postAdviserDetailHttpTriggerService.Setup(x=>x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult<Models.AdviserDetail>(_adviserdetail));
 
-            _httpResponseMessageHelper
-                .Created(Arg.Any<string>()).Returns(x => new HttpResponseMessage(HttpStatusCode.Created));
-
+            // Act
             var result = await RunFunction(ValidAdviserDetailId);
 
             // Assert
@@ -176,17 +171,9 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
 
         private async Task<HttpResponseMessage> RunFunction(string adviserdetailId)
         {
-            return await PostAdviserDetailHttpTrigger.Function.PostAdviserDetailHttpTrigger.Run(
+            return await _function.Run(
                 _request,
-                _log,
-                _resourceHelper,
-                _postAdviserDetailHttpTriggerService,
-                _validate,
-                _loggerHelper,
-                _httpRequestHelper,
-                _httpResponseMessageHelper,
-                _jsonHelper).ConfigureAwait(false);
+                _log.Object).ConfigureAwait(false);
         }
-
     }
 }

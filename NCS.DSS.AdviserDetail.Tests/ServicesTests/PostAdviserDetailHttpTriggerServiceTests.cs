@@ -1,15 +1,15 @@
-﻿using System;
+﻿using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
+using Moq;
+using NCS.DSS.AdviserDetail.Cosmos.Provider;
+using NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service;
+using NUnit.Framework;
+using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
-using NCS.DSS.AdviserDetail.Cosmos.Provider;
-using NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service;
-using NSubstitute;
-using NUnit.Framework;
 
 namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
 {
@@ -17,15 +17,15 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
     public class PostAdviserDetailHttpTriggerServiceTests
     {
         private IPostAdviserDetailHttpTriggerService _postAdviserDetailHttpTriggerService;
-        private IDocumentDBProvider _documentDbProvider;
+        private Mock<IDocumentDBProvider> _documentDbProvider;
         private Models.AdviserDetail _adviserdetail;
 
         [SetUp]
         public void Setup()
         {
-            _documentDbProvider = Substitute.For<IDocumentDBProvider>();
-            _postAdviserDetailHttpTriggerService = Substitute.For<PostAdviserDetailHttpTriggerService>(_documentDbProvider);
-            _adviserdetail = Substitute.For<Models.AdviserDetail>();
+            _documentDbProvider = new Mock<IDocumentDBProvider>();
+            _postAdviserDetailHttpTriggerService = new PostAdviserDetailHttpTriggerService(_documentDbProvider.Object);
+            _adviserdetail = new Models.AdviserDetail();
         }
 
         [Test]
@@ -37,10 +37,11 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             // Assert
             Assert.IsNull(result);
         }
-        
+
         [Test]
         public async Task PostAdviserDetailHttpTriggerServiceTests_CreateAsync_ReturnsResourceWhenUpdated()
         {
+            // Arrange
             const string documentServiceResponseClass = "Microsoft.Azure.Documents.DocumentServiceResponse, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
             const string dictionaryNameValueCollectionClass = "Microsoft.Azure.Documents.Collections.DictionaryNameValueCollection, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
 
@@ -63,7 +64,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.CreateAdviserDetailAsync(Arg.Any<Models.AdviserDetail>()).Returns(Task.FromResult(resourceResponse).Result);
+            _documentDbProvider.Setup(x=>x.CreateAdviserDetailAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult(resourceResponse));
 
             // Act
             var result = await _postAdviserDetailHttpTriggerService.CreateAsync(_adviserdetail);
