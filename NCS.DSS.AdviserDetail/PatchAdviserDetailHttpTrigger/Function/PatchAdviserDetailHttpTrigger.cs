@@ -79,7 +79,10 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
+            {
+                log.LogInformation("Unable to locate 'APIM-SubcontractorId' in request header.");
+                return _httpResponseMessageHelper.BadRequest();
+            }
 
 
             if (!Guid.TryParse(adviserDetailId, out var adviserDetailGuid))
