@@ -83,8 +83,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid,
-                string.Format("Get AdviserDetail By Id C# HTTP trigger function  processed a request. By Touchpoint: {0}",
-                    touchpointId));
+                string.Format($"Get AdviserDetail By Id C# HTTP trigger function  processed a request. By Touchpoint: {0} {touchpointId} and subcontractorId {subcontractorId}"));
 
 
             if (!Guid.TryParse(adviserDetailId, out var AdviserDetailGuid))

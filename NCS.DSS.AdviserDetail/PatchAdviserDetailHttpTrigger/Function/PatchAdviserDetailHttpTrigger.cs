@@ -84,7 +84,6 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
                 return _httpResponseMessageHelper.BadRequest();
             }
 
-
             if (!Guid.TryParse(adviserDetailId, out var adviserDetailGuid))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'adviserDetailId' to a Guid: {0}", adviserDetailId));
