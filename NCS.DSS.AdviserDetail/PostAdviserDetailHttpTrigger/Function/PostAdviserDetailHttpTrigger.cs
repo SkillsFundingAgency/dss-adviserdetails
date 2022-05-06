@@ -79,7 +79,10 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
+            {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
+                return _httpResponseMessageHelper.BadRequest();
+            }
 
             Models.AdviserDetail AdviserDetailRequest;
 
