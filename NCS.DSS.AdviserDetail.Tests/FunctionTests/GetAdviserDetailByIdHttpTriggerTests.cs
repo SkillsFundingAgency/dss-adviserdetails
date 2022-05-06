@@ -63,6 +63,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             // Arrange
             _httpRequestHelper.Setup(x=>x.GetDssTouchpointId(_request)).Returns((string)null);
+            _httpRequestHelper.Setup(x => x.GetDssSubcontractorId(_request)).Returns("9999999999");
 
             // Act
             var result = await RunFunction(ValidAdviserDetailId);
@@ -77,6 +78,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _httpRequestHelper.Setup(x => x.GetDssSubcontractorId(_request)).Returns("9999999999");
 
             // Act
             var result = await RunFunction(InValidId);
@@ -91,6 +93,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             // Arrange
             _httpRequestHelper.Setup(x=>x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _httpRequestHelper.Setup(x => x.GetDssSubcontractorId(_request)).Returns("9999999999");
             _GetAdviserDetailByIdHttpTriggerService.Setup(x=>x.GetAdviserDetailAsync(It.IsAny<Guid>())).Returns(Task.FromResult<Models.AdviserDetail>(null));
 
             // Act
@@ -106,6 +109,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _httpRequestHelper.Setup(x => x.GetDssSubcontractorId(_request)).Returns("9999999999");
             _GetAdviserDetailByIdHttpTriggerService.Setup(x=>x.GetAdviserDetailAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_adviserdetail));
 
             // Act
