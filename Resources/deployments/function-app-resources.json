@@ -2,6 +2,9 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "appInsightsInstrumentationKey": {
+      "type": "string"
+    },
     "appServicePlanId": {
       "type": "string"
     },
@@ -34,7 +37,7 @@
     }
   },
   "variables": {
-    "appInsightsName": "[concat('dss-', toLower(parameters('configEnvironmentName')), '-', split(parameters('functionAppName'), '-')[2], '-ai')]",
+    //"appInsightsName": "[concat('dss-', toLower(parameters('configEnvironmentName')), '-', split(parameters('functionAppName'), '-')[2], '-ai')]",
     "storageAccountConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=', parameters('storageAccountKey'), ';EndpointSuffix=core.windows.net')]"
   },
   "resources": [
@@ -42,7 +45,7 @@
       "name": "[parameters('functionAppName')]",
       "type": "Microsoft.Web/sites",
       "apiVersion": "2016-08-01",
-      "dependsOn": [ "[variables('appInsightsName')]" ],
+      //"dependsOn": [ "[variables('appInsightsName')]" ],
       "location": "[resourceGroup().location]",
       "kind": "functionapp",
       "properties": {
@@ -71,7 +74,7 @@
             },
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
+              "value": "[parameters('appInsightsInstrumentationKey')]"
             },
             {
               "name": "AdviserDetailConnectionString",
