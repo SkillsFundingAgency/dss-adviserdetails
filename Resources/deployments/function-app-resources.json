@@ -38,6 +38,7 @@
   },
   "variables": {
     //"appInsightsName": "[concat('dss-', toLower(parameters('configEnvironmentName')), '-', split(parameters('functionAppName'), '-')[2], '-ai')]",
+    "FunctionAppInsightInstrumentationKey":"[parameters('appInsightsInstrumentationKey')]",
     "storageAccountConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=', parameters('storageAccountKey'), ';EndpointSuffix=core.windows.net')]"
   },
   "resources": [
@@ -72,10 +73,10 @@
               "name": "AzureWebJobsStorage",
               "value": "[variables('storageAccountConnectionString')]"
             },
-            {
-              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[parameters('appInsightsInstrumentationKey')]"
-            },
+           {
+							"name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+							"value": "[variables('FunctionAppInsightInstrumentationKey')]"
+						},
             {
               "name": "AdviserDetailConnectionString",
               "value": "[concat('AccountEndpoint=', parameters('cosmosDbEndpoint'), '/;AccountKey=', parameters('cosmosDbKey'), ';')]"
@@ -95,20 +96,20 @@
           ]
         }
       }
-    },
-    {
-      "apiVersion": "2015-05-01",
-      "name": "[variables('appInsightsName')]",
-      "type": "Microsoft.Insights/components",
-      "location": "[resourceGroup().location]",
-      "kind": "web",
-      "tags": {
-        "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('functionAppName')))]": "Resource"
-      },
-      "properties": {
-        "Application_Type": "web"
-      }
     }
+//    {
+//      "apiVersion": "2015-05-01",
+//      "name": "[variables('appInsightsName')]",
+//      "type": "Microsoft.Insights/components",
+//      "location": "[resourceGroup().location]",
+//      "kind": "web",
+//      "tags": {
+//        "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('functionAppName')))]": "Resource"
+ //     },
+//      "properties": {
+//        "Application_Type": "web"
+//      }
+//    }
   ],
   "outputs": {}
 }
