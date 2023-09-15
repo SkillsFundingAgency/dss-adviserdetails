@@ -159,12 +159,108 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _httpRequestHelper.Setup(x=>x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x=>x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult(_adviserdetail));
-            _postAdviserDetailHttpTriggerService.Setup(x=>x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult<Models.AdviserDetail>(_adviserdetail));
+            _postAdviserDetailHttpTriggerService.Setup(x=>x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult(_adviserdetail));
 
             // Act
             var result = await RunFunction(ValidAdviserDetailId);
 
             // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.Created, result.StatusCode);
+        }
+
+        [TestCase("testing<script>-address@test.com")]
+        [TestCase("testing.email-address@test")]
+        [TestCase("@test.co.uk")]
+        [TestCase("testing-email")]
+        public async Task PostAdviserDetailsHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenAdviserEmailAddressRequestIsInValid(string emailAddress)
+        {
+            // Arrange
+            _adviserdetail = new Models.AdviserDetail { AdviserName = "Test Adviser", AdviserEmailAddress = emailAddress };
+
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult(_adviserdetail));
+            _postAdviserDetailHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult(_adviserdetail));
+
+            // Act
+            var result = await RunFunction(ValidAdviserDetailId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.UnprocessableEntity, result.StatusCode);
+            var error = await result.Content.ReadAsStringAsync();
+
+            Assert.IsTrue(error.Contains("The field AdviserEmailAddress must match the regular expression"));
+        }        
+                
+        [TestCase("testing.email-address@test.co.uk")]
+        [TestCase("abcd.efgs2@jobs-22.co.uk")]
+        [TestCase("testing@educationdevelopmenttrust.com")]
+        public async Task PostAdviserDetailsHttpTrigger_ReturnsStatusCodeOK_WhenAdviserEmailAddressRequestIsValid(string emailAddress)
+        {
+            // Arrange
+            _adviserdetail = new Models.AdviserDetail { AdviserName = "Test Adviser", AdviserEmailAddress = emailAddress };
+
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult(_adviserdetail));
+            _postAdviserDetailHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult(_adviserdetail));
+
+            // Act
+            var result = await RunFunction(ValidAdviserDetailId);
+                        
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.Created, result.StatusCode);
+        }
+
+        [TestCase("123<script>alert(1)</script>")]
+        [TestCase("o123456987")]
+        [TestCase("12354<797")]
+        public async Task PostAdviserDetailsHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenAdviserContactNumberRequestIsInValid(string contactNumber)
+        {
+            // Arrange
+            _adviserdetail = new Models.AdviserDetail { AdviserContactNumber = contactNumber };
+
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult(_adviserdetail));
+            _postAdviserDetailHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult(_adviserdetail));
+
+            // Act
+            var result = await RunFunction(ValidAdviserDetailId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.UnprocessableEntity, result.StatusCode);
+            var error = await result.Content.ReadAsStringAsync();
+
+            Assert.IsTrue(error.Contains("The field AdviserContactNumber must match the regular expression"));
+        }
+
+        [TestCase("020 8315 1500")]
+        [TestCase("0789456123")]
+        [TestCase("07894 56123")]
+        [TestCase("+44 7894 56123")]
+        public async Task PostAdviserDetailsHttpTrigger_ReturnsStatusCodeOK_WhenAdviserContactNumberRequestIsValid(string contactNumber)
+        {
+            // Arrange
+            _adviserdetail = new Models.AdviserDetail { AdviserName = "Test Adviser", AdviserContactNumber = contactNumber };
+
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult(_adviserdetail));
+            _postAdviserDetailHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult(_adviserdetail));
+
+            // Act
+            var result = await RunFunction(ValidAdviserDetailId);
+
+            // Assert            
             Assert.IsInstanceOf<HttpResponseMessage>(result);
             Assert.AreEqual(HttpStatusCode.Created, result.StatusCode);
         }

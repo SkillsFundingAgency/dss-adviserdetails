@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
@@ -122,7 +119,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _PatchAdviserDetailsHttpTriggerService.Setup(x=>x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetailString));
             _PatchAdviserDetailsHttpTriggerService.Setup(x=>x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.AdviserDetail>(null));
             _PatchAdviserDetailsHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AdviserDetailPatch>())).Returns(_adviserDetailString);
-            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<AdviserDetailPatch>(_request)).Returns(Task.FromResult(_adviserdetailPatch));
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<AdviserDetailPatch>(_request)).Returns(Task.FromResult(_adviserdetailPatch));                      
 
             // Act
             var result = await RunFunction(ValidAdviserDetailsId);
@@ -164,6 +161,125 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             var result = await RunFunction(ValidAdviserDetailsId);
 
             // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+        }
+
+        [Test]
+        public async Task PatchAdviserDetailsHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenAdviserNameRequestIsInValid()
+        {
+            // Arrange
+            _adviserdetailPatch = new AdviserDetailPatch {  AdviserName = "<script>alert(1)</script>" };
+
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetailString));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetail));
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<AdviserDetailPatch>(_request)).Returns(Task.FromResult(_adviserdetailPatch));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AdviserDetailPatch>())).Returns(_adviserDetailString);
+
+            // Act
+            var result = await RunFunction(ValidAdviserDetailsId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.UnprocessableEntity, result.StatusCode);
+            var error = await result.Content.ReadAsStringAsync();
+
+            Assert.IsTrue(error.Contains("The field AdviserName must match the regular expression"));
+        }
+
+        [TestCase("<script>alert(1)</script>")]
+        [TestCase("testing.email-address@test<script>.com")]
+        [TestCase("@test.co.uk")]
+        [TestCase("testing-email")]
+        public async Task PatchAdviserDetailsHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenAdviserEmailddressRequestIsInValid(string emailAddress)
+        {
+            // Arrange
+            _adviserdetailPatch = new AdviserDetailPatch { AdviserEmailAddress = emailAddress };
+
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetailString));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetail));
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<AdviserDetailPatch>(_request)).Returns(Task.FromResult(_adviserdetailPatch));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AdviserDetailPatch>())).Returns(_adviserDetailString);
+
+            // Act
+            var result = await RunFunction(ValidAdviserDetailsId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.UnprocessableEntity, result.StatusCode);
+            var error = await result.Content.ReadAsStringAsync();
+
+            Assert.IsTrue(error.Contains("The field AdviserEmailAddress must match the regular expression"));
+        }
+
+        [TestCase("testing.email-address@test.co.uk")]
+        [TestCase("abcd.efgs2@jobs-22.co.uk")]
+        [TestCase("testing@educationdevelopmenttrust.com")]
+        public async Task PatchAdviserDetailsHttpTrigger_ReturnsStatusCodeOK_WhenAdviserEmailAddressRequestIsValid(string emailAddress)
+        {
+            // Arrange
+            _adviserdetailPatch = new AdviserDetailPatch { AdviserEmailAddress = emailAddress };
+
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetailString));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetail));
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<AdviserDetailPatch>(_request)).Returns(Task.FromResult(_adviserdetailPatch));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<AdviserDetailPatch>())).Returns(_adviserDetailString);
+
+            // Act
+            var result = await RunFunction(ValidAdviserDetailsId);
+
+            // Assert            
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+        }
+
+        [TestCase("123<script>alert(1)</script>")]
+        [TestCase("o123456987")]
+        [TestCase("12354<797")]
+        public async Task PatchAdviserDetailsHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenAdviserContactNumberRequestIsInValid(string contactNumber)
+        {
+            // Arrange
+            _adviserdetailPatch = new AdviserDetailPatch { AdviserContactNumber = contactNumber };
+
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetailString));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetail));
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<AdviserDetailPatch>(_request)).Returns(Task.FromResult(_adviserdetailPatch));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AdviserDetailPatch>())).Returns(_adviserDetailString);
+
+            // Act
+            var result = await RunFunction(ValidAdviserDetailsId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.UnprocessableEntity, result.StatusCode);
+            var error = await result.Content.ReadAsStringAsync();
+
+            Assert.IsTrue(error.Contains("The field AdviserContactNumber must match the regular expression"));
+        }
+
+        [TestCase("020 8315 1500")]
+        [TestCase("0789456123")]
+        [TestCase("07894 56123")]
+        [TestCase("+44 7894 56123")]
+        public async Task PatchAdviserDetailsHttpTrigger_ReturnsStatusCodeOK_WhenAdviserContactNumberRequestIsValid(string contactNumber)
+        {
+            // Arrange
+            _adviserdetailPatch = new AdviserDetailPatch { AdviserContactNumber = contactNumber };
+
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetailString));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetail));
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<AdviserDetailPatch>(_request)).Returns(Task.FromResult(_adviserdetailPatch));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<AdviserDetailPatch>())).Returns(_adviserDetailString);
+
+            // Act
+            var result = await RunFunction(ValidAdviserDetailsId);
+
+            // Assert            
             Assert.IsInstanceOf<HttpResponseMessage>(result);
             Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
         }
