@@ -22,11 +22,13 @@ namespace NCS.DSS.AdviserDetail.Models
         public string AdviserName { get; set; }
 
         [StringLength(100)]
+        [RegularExpression(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")]
         [Display(Description = "Email address of the adviser")]
         [Example(Description = "example@sample.com")]
         public string AdviserEmailAddress { get; set; }
 
         [StringLength(100)]
+        [RegularExpression(@"^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$")]
         [Display(Description = "Contact number of the adviser")]
         [Example(Description = "012345 678901")]
         public string AdviserContactNumber { get; set; }
