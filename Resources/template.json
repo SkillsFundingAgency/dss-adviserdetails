@@ -52,6 +52,12 @@
     },
     "templateBaseUrl": {
       "type": "string"
+    },
+    "workspaceName": {
+      "type": "string"
+    },
+    "workspaceResourceGroup": {
+      "type": "string"
     }
   },
     "variables": {
@@ -90,6 +96,9 @@
                 },
                 "cosmosDbKey": {
                   "value": "[parameters('cosmosDbKey')]"
+                },
+                "workspaceId": {
+                  "value": "[resourceId(parameters('workspaceResourceGroup'), 'Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
                 }
               }
             },
