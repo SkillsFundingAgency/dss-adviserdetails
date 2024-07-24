@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.AdviserDetail.Cosmos.Helper;
@@ -45,8 +40,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         public void Setup()
         {
             _adviserDetail = new Models.AdviserDetail();
-            _adviserdetailPatch = new AdviserDetailPatch();
-            //_request = new DefaultHttpRequest(new DefaultHttpContext());
+            _adviserdetailPatch = new AdviserDetailPatch();            
 
             _log = new Mock<ILogger>();
             _resourceHelper = new Mock<IResourceHelper>();
@@ -77,8 +71,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             var result = await RunFunction(ValidAdviserDetailsId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -92,8 +85,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             var result = await RunFunction(InValidId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -110,8 +102,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             var result = await RunFunction(ValidAdviserDetailsId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
         [Test]
@@ -128,8 +119,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             var result = await RunFunction(ValidAdviserDetailsId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -146,8 +136,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             var result = await RunFunction(ValidAdviserDetailsId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -164,16 +153,15 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             var result = await RunFunction(ValidAdviserDetailsId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<OkObjectResult>());
         }
 
-        private async Task<HttpResponseMessage> RunFunction(string adviserdetailId)
+        private async Task<IActionResult> RunFunction(string adviserdetailId)
         {
-            return await _function.Run(
+            return await _function.RunAsync(
                 _request,
                 _log.Object,
-                adviserdetailId).ConfigureAwait(false);
+                adviserdetailId);
         }
     }
 }

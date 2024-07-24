@@ -4,8 +4,6 @@ using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.AdviserDetail.Cosmos.Helper;
 using NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service;
@@ -15,8 +13,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Azure.Functions.Worker;
 
 namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
 {
@@ -47,7 +45,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
             _jsonHelper = jsonHelper;
         }
 
-        [FunctionName("Post")]
+        [Function("Post")]
         [ProducesResponseType(typeof(Models.AdviserDetail),200)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Adviser Detail Created", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Adviser Detail does not exist", ShowSchema = false)]
@@ -56,7 +54,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new Adviser Detail for a customer.")]
-        public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "AdviserDetails")]HttpRequest req, ILogger log)
+        public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "AdviserDetails")]HttpRequest req, ILogger log)
         {
             _loggerHelper.LogMethodEnter(log);
 
@@ -74,7 +72,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
             if (string.IsNullOrEmpty(touchpointId))
             {
                 log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header.");
-                return _httpResponseMessageHelper.BadRequest();
+                return new BadRequestObjectResult("Unable to locate 'APIM-TouchpointId' in request header.");
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
@@ -91,13 +89,13 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
             catch (JsonException ex)
             {
                 _loggerHelper.LogError(log, correlationGuid, "Unable to retrieve body from req", ex);
-                return _httpResponseMessageHelper.UnprocessableEntity(ex);
+                return new UnprocessableEntityObjectResult(ex);
             }
 
             if (AdviserDetailRequest == null)
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "Adviser Detail request is null");
-                return _httpResponseMessageHelper.UnprocessableEntity();
+                return new UnprocessableEntityResult();
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for Adviser Detail");
@@ -110,7 +108,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
             if (errors != null && errors.Any())
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "validation errors with resource");
-                return _httpResponseMessageHelper.UnprocessableEntity(errors);
+                return new UnprocessableEntityObjectResult(errors);
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to Create Adviser Detail"));
@@ -118,10 +116,12 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
 
             _loggerHelper.LogMethodExit(log);
 
-            return adviserdetail == null
-                ? _httpResponseMessageHelper.BadRequest()
-                : _httpResponseMessageHelper.Created(_jsonHelper.SerializeObjectAndRenameIdProperty(adviserdetail, "id", "AdviserDetailId"));
-
+            return adviserdetail == null                
+                ? new BadRequestResult()
+                : new ObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(adviserdetail, "id", "AdviserDetailId")) 
+                {
+                    StatusCode = (int)HttpStatusCode.Created
+                };
         }
     }
 }

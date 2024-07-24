@@ -2,7 +2,7 @@
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.AdviserDetail.Cosmos.Helper;
@@ -14,7 +14,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
@@ -46,8 +45,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         public void Setup()
         {
             _adviserdetail = new Models.AdviserDetail() { AdviserName = "testing" };
-            _request = new DefaultHttpRequest(new DefaultHttpContext() );
-
+            _request = new DefaultHttpContext().Request;
             _request.Headers.Add(TouchpointIdHeaderParamKey, TouchpointIdHeaderParamValue);
             _request.Headers.Add(ApimUrlHeaderParameterKey, ApimUrlHeaderParameterValue);
             _log = new Mock<ILogger>();
@@ -79,8 +77,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             var result = await RunFunction(ValidAdviserDetailId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -109,8 +106,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             var result = await RunFunction(ValidAdviserDetailId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual((HttpStatusCode)422, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<UnprocessableEntityObjectResult>());
         }
 
         [Test]
@@ -127,10 +123,8 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             var result = await RunFunction(ValidAdviserDetailId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual((HttpStatusCode)422, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<UnprocessableEntityResult>());
         }
-
 
 
         [Test]
@@ -147,8 +141,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             var result = await RunFunction(ValidAdviserDetailId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestResult>());
         }
 
         [Test]
@@ -165,15 +158,17 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             var result = await RunFunction(ValidAdviserDetailId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.Created, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<ObjectResult>());
+
+            var createdResult = result as ObjectResult;
+            Assert.That(createdResult.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
         }
 
-        private async Task<HttpResponseMessage> RunFunction(string adviserdetailId)
+        private async Task<IActionResult> RunFunction(string adviserdetailId)
         {
-            return await _function.Run(
+            return await _function.RunAsync(
                 _request,
-                _log.Object).ConfigureAwait(false);
+                _log.Object);
         }
     }
 }
