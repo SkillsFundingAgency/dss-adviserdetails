@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using AdviserDetailFunction = NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function;
 
 namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
 {
@@ -27,8 +28,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         private const string TouchpointIdHeaderParamKey = "touchpointId";
         private const string ApimUrlHeaderParameterKey = "apimurl";
         private string ApimUrlHeaderParameterValue = "http://localhost:7071/";
-        private string TouchpointIdHeaderParamValue = "9000000000";
-        private Mock<ILogger> _log;
+        private string TouchpointIdHeaderParamValue = "9000000000";        
         private HttpRequest _request;
         private Mock<IResourceHelper> _resourceHelper;
         private IValidate _validate;
@@ -39,7 +39,8 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         private Mock<IPostAdviserDetailHttpTriggerService> _postAdviserDetailHttpTriggerService;
         private Mock<IDocumentDBProvider> _provider;
         private Models.AdviserDetail _adviserdetail;
-        private PostAdviserDetailHttpTrigger.Function.PostAdviserDetailHttpTrigger _function;
+        private AdviserDetailFunction.PostAdviserDetailHttpTrigger _function;
+        private Mock<ILogger<AdviserDetailFunction.PostAdviserDetailHttpTrigger>> _logger;
 
         [SetUp]
         public void Setup()
@@ -47,8 +48,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _adviserdetail = new Models.AdviserDetail() { AdviserName = "testing" };
             _request = new DefaultHttpContext().Request;
             _request.Headers.Add(TouchpointIdHeaderParamKey, TouchpointIdHeaderParamValue);
-            _request.Headers.Add(ApimUrlHeaderParameterKey, ApimUrlHeaderParameterValue);
-            _log = new Mock<ILogger>();
+            _request.Headers.Add(ApimUrlHeaderParameterKey, ApimUrlHeaderParameterValue);            
             _resourceHelper = new Mock<IResourceHelper>();
             _validate = new Validate();
             _loggerHelper = new Mock<ILoggerHelper>();
@@ -57,14 +57,16 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _jsonHelper = new JsonHelper();
             _provider = new Mock<IDocumentDBProvider>();
             _postAdviserDetailHttpTriggerService = new Mock<IPostAdviserDetailHttpTriggerService>();
-            _function = new PostAdviserDetailHttpTrigger.Function.PostAdviserDetailHttpTrigger(
+            _logger = new Mock<ILogger<AdviserDetailFunction.PostAdviserDetailHttpTrigger>>();
+            _function = new AdviserDetailFunction.PostAdviserDetailHttpTrigger(
                 _resourceHelper.Object, 
                 _postAdviserDetailHttpTriggerService.Object,
                 _validate, 
                 _loggerHelper.Object, 
                 _httpRequestHelper.Object, 
                 _httpResponseMessageHelper, 
-                _jsonHelper);
+                _jsonHelper,
+                _logger.Object);
         }
 
         [Test]
@@ -93,14 +95,15 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             List<System.ComponentModel.DataAnnotations.ValidationResult> err = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
             err.Add(new System.ComponentModel.DataAnnotations.ValidationResult("some error"));
             validate.Setup(x => x.ValidateResource(It.IsAny<IAdviserDetail>(), It.IsAny<bool>())).Returns(err);
-            _function = new PostAdviserDetailHttpTrigger.Function.PostAdviserDetailHttpTrigger(
+            _function = new AdviserDetailFunction.PostAdviserDetailHttpTrigger(
                 _resourceHelper.Object,
                 _postAdviserDetailHttpTriggerService.Object,
                 validate.Object,
                 _loggerHelper.Object,
                 _httpRequestHelper.Object,
                 _httpResponseMessageHelper,
-                _jsonHelper);
+                _jsonHelper,
+                _logger.Object);
 
             // Act
             var result = await RunFunction(ValidAdviserDetailId);
@@ -167,8 +170,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         private async Task<IActionResult> RunFunction(string adviserdetailId)
         {
             return await _function.RunAsync(
-                _request,
-                _log.Object);
+                _request);
         }
     }
 }

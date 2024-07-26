@@ -13,6 +13,7 @@ using NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Validation;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using AdviserDetailFunction = NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function;
 
 namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
 {
@@ -34,7 +35,8 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         private Models.AdviserDetail _adviserDetail;
         private AdviserDetailPatch _adviserdetailPatch;
         private string _adviserDetailString;
-        private PatchAdviserDetailHttpTrigger.Function.PatchAdviserDetailHttpTrigger _function;
+        private AdviserDetailFunction.PatchAdviserDetailHttpTrigger _function;
+        private Mock<ILogger<AdviserDetailFunction.PatchAdviserDetailHttpTrigger>> _logger;
 
         [SetUp]
         public void Setup()
@@ -51,14 +53,16 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _jsonHelper = new JsonHelper();
             _PatchAdviserDetailsHttpTriggerService = new Mock<IPatchAdviserDetailHttpTriggerService>();
             _adviserDetailString = JsonConvert.SerializeObject(_adviserDetail);
-            _function = new PatchAdviserDetailHttpTrigger.Function.PatchAdviserDetailHttpTrigger(
+            _logger = new Mock<ILogger<AdviserDetailFunction.PatchAdviserDetailHttpTrigger>>();
+            _function = new AdviserDetailFunction.PatchAdviserDetailHttpTrigger(
                 _resourceHelper.Object, 
                 _PatchAdviserDetailsHttpTriggerService.Object, 
                 _validate, 
                 _loggerHelper.Object, 
                 _httpRequestHelper.Object, 
                 _httpResponseMessageHelper, 
-                _jsonHelper);
+                _jsonHelper,
+                _logger.Object);
         }
 
         [Test]
@@ -160,7 +164,6 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             return await _function.RunAsync(
                 _request,
-                _log.Object,
                 adviserdetailId);
         }
     }

@@ -11,6 +11,7 @@ using NCS.DSS.AdviserDetail.Validation;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using AdviserDetailFunction = NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function;
 
 namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
 {
@@ -20,8 +21,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
 
         private const string ValidAdviserDetailId = "cff8080e-1da2-42bd-9b63-8f235aad9d86";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
-
-        private Mock<ILogger> _log;
+                
         private HttpRequest _request;
         private Mock<IResourceHelper> _resourceHelper;
         private IValidate _validate;
@@ -31,14 +31,14 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         private IJsonHelper _jsonHelper;
         private Mock<IGetAdviserDetailByIdHttpTriggerService> _GetAdviserDetailByIdHttpTriggerService;
         private Models.AdviserDetail _adviserdetail;
-        private GetAdviserDetailByIdHttpTrigger.Function.GetAdviserDetailByIdHttpTrigger _function;
+        private AdviserDetailFunction.GetAdviserDetailByIdHttpTrigger _function;
+        private Mock<ILogger<AdviserDetailFunction.GetAdviserDetailByIdHttpTrigger>> _logger;
 
         [SetUp]
         public void Setup()
         {
             _adviserdetail = new Models.AdviserDetail();
-            _request = new DefaultHttpContext().Request;
-            _log = new Mock<ILogger>();
+            _request = new DefaultHttpContext().Request;            
             _resourceHelper = new Mock<IResourceHelper>();
             _validate = new Validate();
             _loggerHelper = new Mock<ILoggerHelper>();
@@ -47,13 +47,15 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _jsonHelper = new JsonHelper();
             _resourceHelper = new Mock<IResourceHelper>();
             _GetAdviserDetailByIdHttpTriggerService = new Mock<IGetAdviserDetailByIdHttpTriggerService>();
-            _function = new GetAdviserDetailByIdHttpTrigger.Function.GetAdviserDetailByIdHttpTrigger(
+            _logger = new Mock<ILogger<AdviserDetailFunction.GetAdviserDetailByIdHttpTrigger>>();
+            _function = new AdviserDetailFunction.GetAdviserDetailByIdHttpTrigger(
                 _resourceHelper.Object, 
                 _GetAdviserDetailByIdHttpTriggerService.Object, 
                 _loggerHelper.Object, 
                 _httpRequestHelper.Object, 
                 _httpResponseMessageHelper, 
-                _jsonHelper);
+                _jsonHelper,
+                _logger.Object);
         }
 
         [Test]
@@ -114,7 +116,6 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             return await _function.RunAsync(
                 _request,
-                _log.Object,
                 adviserdetailId);
         }
     }
