@@ -1,6 +1,5 @@
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +16,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using System.Text;
+using System.Text.Json;
 
 namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 {
@@ -27,8 +27,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
         private readonly IValidate _validate;
         private readonly ILoggerHelper _loggerHelper;
         private readonly IHttpRequestHelper _httpRequestHelper;
-        private readonly IHttpResponseMessageHelper _httpResponseMessageHelper;
-        private readonly IJsonHelper _jsonHelper;
+        private readonly IHttpResponseMessageHelper _httpResponseMessageHelper;        
         private readonly ILogger _logger;
 
         public PatchAdviserDetailHttpTrigger(IResourceHelper resourceHelper,
@@ -36,8 +35,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
             IValidate validate,
             ILoggerHelper loggerHelper,
             IHttpRequestHelper httpRequestHelper,
-            IHttpResponseMessageHelper httpResponseMessageHelper,
-            IJsonHelper jsonHelper, 
+            IHttpResponseMessageHelper httpResponseMessageHelper,            
             ILogger<PatchAdviserDetailHttpTrigger> logger)
         {
             _resourceHelper = resourceHelper;
@@ -45,8 +43,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
             _validate = validate;
             _loggerHelper = loggerHelper;
             _httpRequestHelper = httpRequestHelper;
-            _httpResponseMessageHelper = httpResponseMessageHelper;
-            _jsonHelper = jsonHelper;
+            _httpResponseMessageHelper = httpResponseMessageHelper;            
             _logger = logger;
         }
 
@@ -98,7 +95,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
                 _loggerHelper.LogInformationMessage(_logger, correlationGuid, "Attempt to get resource from body of the request");
                 adviserDetailPatchRequest = await _httpRequestHelper.GetResourceFromRequest<Models.AdviserDetailPatch>(req);
             }
-            catch (JsonException ex)
+            catch (Newtonsoft.Json.JsonException ex)
             {
                 _loggerHelper.LogError(_logger, correlationGuid, "Unable to retrieve body from req", ex);
                 return new UnprocessableEntityObjectResult(ex);
@@ -144,14 +141,12 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 
             _loggerHelper.LogMethodExit(_logger);
 
-            var contentTypes = new Microsoft.AspNetCore.Mvc.Formatters.MediaTypeCollection
-            {
-                new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/json")
-            };
-
-            return updatedAdviserDetail == null ?
-                new BadRequestObjectResult(adviserDetailGuid) :
-                new OkObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(updatedAdviserDetail, "id", "AdviserDetailId")) { ContentTypes = contentTypes };
+            return updatedAdviserDetail == null
+                ? new BadRequestObjectResult(adviserDetailGuid)
+                : new JsonResult(updatedAdviserDetail, new JsonSerializerOptions())
+                {
+                    StatusCode = (int)HttpStatusCode.OK
+                };
         }
     }
 }

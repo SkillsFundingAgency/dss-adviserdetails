@@ -1,6 +1,5 @@
 ﻿using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -34,8 +33,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         private IValidate _validate;
         private Mock<ILoggerHelper> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
-        private IHttpResponseMessageHelper _httpResponseMessageHelper;
-        private IJsonHelper _jsonHelper;
+        private IHttpResponseMessageHelper _httpResponseMessageHelper;        
         private Mock<IPostAdviserDetailHttpTriggerService> _postAdviserDetailHttpTriggerService;
         private Mock<IDocumentDBProvider> _provider;
         private Models.AdviserDetail _adviserdetail;
@@ -53,8 +51,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _validate = new Validate();
             _loggerHelper = new Mock<ILoggerHelper>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
-            _httpResponseMessageHelper = new HttpResponseMessageHelper();
-            _jsonHelper = new JsonHelper();
+            _httpResponseMessageHelper = new HttpResponseMessageHelper();            
             _provider = new Mock<IDocumentDBProvider>();
             _postAdviserDetailHttpTriggerService = new Mock<IPostAdviserDetailHttpTriggerService>();
             _logger = new Mock<ILogger<AdviserDetailFunction.PostAdviserDetailHttpTrigger>>();
@@ -64,8 +61,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
                 _validate, 
                 _loggerHelper.Object, 
                 _httpRequestHelper.Object, 
-                _httpResponseMessageHelper, 
-                _jsonHelper,
+                _httpResponseMessageHelper,                
                 _logger.Object);
         }
 
@@ -101,8 +97,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
                 validate.Object,
                 _loggerHelper.Object,
                 _httpRequestHelper.Object,
-                _httpResponseMessageHelper,
-                _jsonHelper,
+                _httpResponseMessageHelper,                
                 _logger.Object);
 
             // Act
@@ -161,9 +156,9 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             var result = await RunFunction(ValidAdviserDetailId);
 
             // Assert
-            Assert.That(result, Is.InstanceOf<ObjectResult>());
+            Assert.That(result, Is.InstanceOf<JsonResult>());
 
-            var createdResult = result as ObjectResult;
+            var createdResult = result as JsonResult;
             Assert.That(createdResult.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
         }
 

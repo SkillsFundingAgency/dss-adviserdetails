@@ -1,6 +1,5 @@
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +14,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Newtonsoft.Json;
 using System.Text;
+using System.Text.Json;
 
 namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
 {
@@ -25,7 +25,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
         private readonly ILoggerHelper _loggerHelper;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IHttpResponseMessageHelper _httpResponseMessageHelper;
-        private readonly IJsonHelper _jsonHelper;
+        
         private readonly ILogger _logger;
 
         public GetAdviserDetailByIdHttpTrigger(
@@ -33,8 +33,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
                 IGetAdviserDetailByIdHttpTriggerService AdviserDetailGetService,
                 ILoggerHelper loggerHelper,
                 IHttpRequestHelper httpRequestHelper,
-                IHttpResponseMessageHelper httpResponseMessageHelper,
-                IJsonHelper jsonHelper,
+                IHttpResponseMessageHelper httpResponseMessageHelper,                
                 ILogger<GetAdviserDetailByIdHttpTrigger> logger
             )
         {
@@ -42,8 +41,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
             _AdviserDetailGetService = AdviserDetailGetService;
             _loggerHelper = loggerHelper;
             _httpRequestHelper = httpRequestHelper;
-            _httpResponseMessageHelper = httpResponseMessageHelper;
-            _jsonHelper = jsonHelper;
+            _httpResponseMessageHelper = httpResponseMessageHelper;            
             _logger = logger;
         }
 
@@ -94,11 +92,14 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
             _loggerHelper.LogInformationMessage(_logger, correlationGuid, string.Format("Attempting to get Adviser Detail", AdviserDetailGuid));
             var AdviserDetail = await _AdviserDetailGetService.GetAdviserDetailAsync(AdviserDetailGuid);
 
-            _loggerHelper.LogMethodExit(_logger);
+            _loggerHelper.LogMethodExit(_logger);            
 
             return AdviserDetail == null ?
                 new NoContentResult() :
-                new OkObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(AdviserDetail, "id", "AdviserDetailId"));
+                new JsonResult(AdviserDetail, new JsonSerializerOptions())
+                {
+                    StatusCode = (int)HttpStatusCode.OK
+                };
         }
     }
 }

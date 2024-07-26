@@ -1,6 +1,5 @@
 ﻿using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -27,8 +26,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         private IValidate _validate;
         private Mock<ILoggerHelper> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
-        private IHttpResponseMessageHelper _httpResponseMessageHelper;
-        private IJsonHelper _jsonHelper;
+        private IHttpResponseMessageHelper _httpResponseMessageHelper;        
         private Mock<IGetAdviserDetailByIdHttpTriggerService> _GetAdviserDetailByIdHttpTriggerService;
         private Models.AdviserDetail _adviserdetail;
         private AdviserDetailFunction.GetAdviserDetailByIdHttpTrigger _function;
@@ -43,8 +41,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _validate = new Validate();
             _loggerHelper = new Mock<ILoggerHelper>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
-            _httpResponseMessageHelper = new HttpResponseMessageHelper();
-            _jsonHelper = new JsonHelper();
+            _httpResponseMessageHelper = new HttpResponseMessageHelper();            
             _resourceHelper = new Mock<IResourceHelper>();
             _GetAdviserDetailByIdHttpTriggerService = new Mock<IGetAdviserDetailByIdHttpTriggerService>();
             _logger = new Mock<ILogger<AdviserDetailFunction.GetAdviserDetailByIdHttpTrigger>>();
@@ -53,8 +50,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
                 _GetAdviserDetailByIdHttpTriggerService.Object, 
                 _loggerHelper.Object, 
                 _httpRequestHelper.Object, 
-                _httpResponseMessageHelper, 
-                _jsonHelper,
+                _httpResponseMessageHelper,                
                 _logger.Object);
         }
 
@@ -109,7 +105,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             var result = await RunFunction(ValidAdviserDetailId);
 
             // Assert
-            Assert.That(result, Is.InstanceOf<OkObjectResult>());
+            Assert.That(result, Is.InstanceOf<JsonResult>());
         }
 
         private async Task<IActionResult> RunFunction(string adviserdetailId)

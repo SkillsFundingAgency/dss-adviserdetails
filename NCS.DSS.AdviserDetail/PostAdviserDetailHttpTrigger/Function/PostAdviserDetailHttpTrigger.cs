@@ -15,6 +15,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
+using System.Text.Json;
 
 namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
 {
@@ -25,8 +26,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
         private readonly IValidate _validate;
         private readonly ILoggerHelper _loggerHelper;
         private readonly IHttpRequestHelper _httpRequestHelper;
-        private readonly IHttpResponseMessageHelper _httpResponseMessageHelper;
-        private readonly IJsonHelper _jsonHelper;
+        private readonly IHttpResponseMessageHelper _httpResponseMessageHelper;        
         private readonly ILogger _logger;
 
         public PostAdviserDetailHttpTrigger(IResourceHelper resourceHelper,
@@ -34,8 +34,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
             IValidate validate,
             ILoggerHelper loggerHelper,
             IHttpRequestHelper httpRequestHelper,
-            IHttpResponseMessageHelper httpResponseMessageHelper,
-            IJsonHelper jsonHelper,
+            IHttpResponseMessageHelper httpResponseMessageHelper,            
             ILogger<PostAdviserDetailHttpTrigger> logger)
         {
             _resourceHelper = resourceHelper;
@@ -43,8 +42,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
             _validate = validate;
             _loggerHelper = loggerHelper;
             _httpRequestHelper = httpRequestHelper;
-            _httpResponseMessageHelper = httpResponseMessageHelper;
-            _jsonHelper = jsonHelper;
+            _httpResponseMessageHelper = httpResponseMessageHelper;            
             _logger = logger;
         }
 
@@ -89,7 +87,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
                 _loggerHelper.LogInformationMessage(_logger, correlationGuid, "Attempt to get resource from body of the request");
                 AdviserDetailRequest = await _httpRequestHelper.GetResourceFromRequest<Models.AdviserDetail>(req);
             }
-            catch (JsonException ex)
+            catch (Newtonsoft.Json.JsonException ex)
             {
                 _loggerHelper.LogError(_logger, correlationGuid, "Unable to retrieve body from req", ex);
                 return new UnprocessableEntityObjectResult(ex);
@@ -119,17 +117,11 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
 
             _loggerHelper.LogMethodExit(_logger);
 
-            var contentTypes = new Microsoft.AspNetCore.Mvc.Formatters.MediaTypeCollection
-            {
-                new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/json")
-            };
-
-            return adviserdetail == null                
+            return adviserdetail == null
                 ? new BadRequestResult()
-                : new ObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(adviserdetail, "id", "AdviserDetailId")) 
+                : new JsonResult(adviserdetail, new JsonSerializerOptions())
                 {
-                    StatusCode = (int)HttpStatusCode.Created,
-                    ContentTypes = contentTypes
+                    StatusCode = (int)HttpStatusCode.Created
                 };
         }
     }
