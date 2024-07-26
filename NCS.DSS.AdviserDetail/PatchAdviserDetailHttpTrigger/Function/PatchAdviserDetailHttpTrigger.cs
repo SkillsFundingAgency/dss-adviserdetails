@@ -144,9 +144,14 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 
             _loggerHelper.LogMethodExit(_logger);
 
+            var contentTypes = new Microsoft.AspNetCore.Mvc.Formatters.MediaTypeCollection
+            {
+                new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/json")
+            };
+
             return updatedAdviserDetail == null ?
                 new BadRequestObjectResult(adviserDetailGuid) :
-                new OkObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(updatedAdviserDetail, "id", "AdviserDetailId"));
+                new OkObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(updatedAdviserDetail, "id", "AdviserDetailId")) { ContentTypes = contentTypes };
         }
     }
 }

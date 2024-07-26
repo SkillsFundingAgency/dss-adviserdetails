@@ -119,11 +119,17 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
 
             _loggerHelper.LogMethodExit(_logger);
 
+            var contentTypes = new Microsoft.AspNetCore.Mvc.Formatters.MediaTypeCollection
+            {
+                new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/json")
+            };
+
             return adviserdetail == null                
                 ? new BadRequestResult()
                 : new ObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(adviserdetail, "id", "AdviserDetailId")) 
                 {
-                    StatusCode = (int)HttpStatusCode.Created
+                    StatusCode = (int)HttpStatusCode.Created,
+                    ContentTypes = contentTypes
                 };
         }
     }
