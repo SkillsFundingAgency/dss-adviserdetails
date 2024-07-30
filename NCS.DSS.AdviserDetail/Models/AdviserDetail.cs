@@ -1,8 +1,8 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using DFC.JSON.Standard.Attributes;
-using DFC.Swagger.Standard.Annotations;
+﻿using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.AdviserDetails.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace NCS.DSS.AdviserDetail.Models
 {
@@ -47,7 +47,7 @@ namespace NCS.DSS.AdviserDetail.Models
         [Example(Description = "01234567899876543210")]
         public string SubcontractorId { get; set; }
 
-        [JsonIgnoreOnSerialize]
+        [JsonIgnore]
         public string CreatedBy { get; set; }
 
         public void SetDefaultValues()
