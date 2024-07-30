@@ -9,6 +9,7 @@ using NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Validation;
 using NUnit.Framework;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using AdviserDetailFunction = NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function;
 
@@ -22,11 +23,8 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
                 
         private HttpRequest _request;
-        private Mock<IResourceHelper> _resourceHelper;
-        private IValidate _validate;
         private Mock<ILoggerHelper> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
-        private IHttpResponseMessageHelper _httpResponseMessageHelper;        
         private Mock<IGetAdviserDetailByIdHttpTriggerService> _GetAdviserDetailByIdHttpTriggerService;
         private Models.AdviserDetail _adviserdetail;
         private AdviserDetailFunction.GetAdviserDetailByIdHttpTrigger _function;
@@ -37,20 +35,14 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             _adviserdetail = new Models.AdviserDetail();
             _request = new DefaultHttpContext().Request;            
-            _resourceHelper = new Mock<IResourceHelper>();
-            _validate = new Validate();
             _loggerHelper = new Mock<ILoggerHelper>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
-            _httpResponseMessageHelper = new HttpResponseMessageHelper();            
-            _resourceHelper = new Mock<IResourceHelper>();
             _GetAdviserDetailByIdHttpTriggerService = new Mock<IGetAdviserDetailByIdHttpTriggerService>();
             _logger = new Mock<ILogger<AdviserDetailFunction.GetAdviserDetailByIdHttpTrigger>>();
             _function = new AdviserDetailFunction.GetAdviserDetailByIdHttpTrigger(
-                _resourceHelper.Object, 
                 _GetAdviserDetailByIdHttpTriggerService.Object, 
                 _loggerHelper.Object, 
                 _httpRequestHelper.Object, 
-                _httpResponseMessageHelper,                
                 _logger.Object);
         }
 
@@ -103,9 +95,11 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
 
             // Act
             var result = await RunFunction(ValidAdviserDetailId);
+            var responseResult = result as JsonResult;
 
-            // Assert
+            //Assert
             Assert.That(result, Is.InstanceOf<JsonResult>());
+            Assert.That(responseResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         }
 
         private async Task<IActionResult> RunFunction(string adviserdetailId)

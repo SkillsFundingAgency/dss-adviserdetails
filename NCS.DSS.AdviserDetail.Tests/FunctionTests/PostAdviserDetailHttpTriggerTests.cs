@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.AdviserDetail.Cosmos.Helper;
-using NCS.DSS.AdviserDetail.Cosmos.Provider;
 using NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Validation;
 using NCS.DSS.AdviserDetails.Models;
@@ -29,13 +28,10 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         private string ApimUrlHeaderParameterValue = "http://localhost:7071/";
         private string TouchpointIdHeaderParamValue = "9000000000";        
         private HttpRequest _request;
-        private Mock<IResourceHelper> _resourceHelper;
         private IValidate _validate;
         private Mock<ILoggerHelper> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
-        private IHttpResponseMessageHelper _httpResponseMessageHelper;        
         private Mock<IPostAdviserDetailHttpTriggerService> _postAdviserDetailHttpTriggerService;
-        private Mock<IDocumentDBProvider> _provider;
         private Models.AdviserDetail _adviserdetail;
         private AdviserDetailFunction.PostAdviserDetailHttpTrigger _function;
         private Mock<ILogger<AdviserDetailFunction.PostAdviserDetailHttpTrigger>> _logger;
@@ -47,21 +43,16 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _request = new DefaultHttpContext().Request;
             _request.Headers.Add(TouchpointIdHeaderParamKey, TouchpointIdHeaderParamValue);
             _request.Headers.Add(ApimUrlHeaderParameterKey, ApimUrlHeaderParameterValue);            
-            _resourceHelper = new Mock<IResourceHelper>();
             _validate = new Validate();
             _loggerHelper = new Mock<ILoggerHelper>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
-            _httpResponseMessageHelper = new HttpResponseMessageHelper();            
-            _provider = new Mock<IDocumentDBProvider>();
             _postAdviserDetailHttpTriggerService = new Mock<IPostAdviserDetailHttpTriggerService>();
             _logger = new Mock<ILogger<AdviserDetailFunction.PostAdviserDetailHttpTrigger>>();
             _function = new AdviserDetailFunction.PostAdviserDetailHttpTrigger(
-                _resourceHelper.Object, 
                 _postAdviserDetailHttpTriggerService.Object,
                 _validate, 
                 _loggerHelper.Object, 
                 _httpRequestHelper.Object, 
-                _httpResponseMessageHelper,                
                 _logger.Object);
         }
 
@@ -83,7 +74,6 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult<Models.AdviserDetail>(_adviserdetail));
             _postAdviserDetailHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult<Models.AdviserDetail>(_adviserdetail));
@@ -92,12 +82,10 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             err.Add(new System.ComponentModel.DataAnnotations.ValidationResult("some error"));
             validate.Setup(x => x.ValidateResource(It.IsAny<IAdviserDetail>(), It.IsAny<bool>())).Returns(err);
             _function = new AdviserDetailFunction.PostAdviserDetailHttpTrigger(
-                _resourceHelper.Object,
                 _postAdviserDetailHttpTriggerService.Object,
                 validate.Object,
                 _loggerHelper.Object,
                 _httpRequestHelper.Object,
-                _httpResponseMessageHelper,                
                 _logger.Object);
 
             // Act
@@ -112,7 +100,6 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult<Models.AdviserDetail>(null));
             _postAdviserDetailHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult<Models.AdviserDetail>(null));
@@ -130,7 +117,6 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult(new Models.AdviserDetail() { AdviserName = "some name" }));
             _postAdviserDetailHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult<Models.AdviserDetail>(null));
@@ -147,7 +133,6 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             // Arrange
             _httpRequestHelper.Setup(x=>x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _httpRequestHelper.Setup(x=>x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x=>x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult(_adviserdetail));
             _postAdviserDetailHttpTriggerService.Setup(x=>x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult<Models.AdviserDetail>(_adviserdetail));
@@ -157,9 +142,11 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
 
             // Assert
             Assert.That(result, Is.InstanceOf<JsonResult>());
+            var responseResult = result as JsonResult;
 
-            var createdResult = result as JsonResult;
-            Assert.That(createdResult.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
+            //Assert
+            Assert.That(result, Is.InstanceOf<JsonResult>());
+            Assert.That(responseResult.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
         }
 
         private async Task<IActionResult> RunFunction(string adviserdetailId)
