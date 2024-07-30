@@ -3,45 +3,37 @@ using DFC.HTTP.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using NCS.DSS.AdviserDetail.Cosmos.Helper;
 using NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Service;
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.Azure.Functions.Worker;
-using Newtonsoft.Json;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
 {
     public class GetAdviserDetailByIdHttpTrigger
     {
-        private readonly IResourceHelper _resourceHelper;
         private readonly IGetAdviserDetailByIdHttpTriggerService _AdviserDetailGetService;
         private readonly ILoggerHelper _loggerHelper;
         private readonly IHttpRequestHelper _httpRequestHelper;
-        private readonly IHttpResponseMessageHelper _httpResponseMessageHelper;
-        
         private readonly ILogger _logger;
 
         public GetAdviserDetailByIdHttpTrigger(
-                IResourceHelper resourceHelper,
                 IGetAdviserDetailByIdHttpTriggerService AdviserDetailGetService,
                 ILoggerHelper loggerHelper,
                 IHttpRequestHelper httpRequestHelper,
-                IHttpResponseMessageHelper httpResponseMessageHelper,                
                 ILogger<GetAdviserDetailByIdHttpTrigger> logger
             )
         {
-            _resourceHelper = resourceHelper;
             _AdviserDetailGetService = AdviserDetailGetService;
             _loggerHelper = loggerHelper;
             _httpRequestHelper = httpRequestHelper;
-            _httpResponseMessageHelper = httpResponseMessageHelper;            
             _logger = logger;
         }
 

@@ -3,8 +3,8 @@ using DFC.HTTP.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using NCS.DSS.AdviserDetail.Cosmos.Helper;
 using NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Validation;
 using Newtonsoft.Json;
@@ -13,37 +13,31 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.Azure.Functions.Worker;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 {
     public class PatchAdviserDetailHttpTrigger
     {
-        private readonly IResourceHelper _resourceHelper;
         private readonly IPatchAdviserDetailHttpTriggerService _adviserDetailPatchService;
         private readonly IValidate _validate;
         private readonly ILoggerHelper _loggerHelper;
         private readonly IHttpRequestHelper _httpRequestHelper;
-        private readonly IHttpResponseMessageHelper _httpResponseMessageHelper;        
         private readonly ILogger _logger;
 
-        public PatchAdviserDetailHttpTrigger(IResourceHelper resourceHelper,
+        public PatchAdviserDetailHttpTrigger(
             IPatchAdviserDetailHttpTriggerService adviserDetailPatchService,
             IValidate validate,
             ILoggerHelper loggerHelper,
             IHttpRequestHelper httpRequestHelper,
-            IHttpResponseMessageHelper httpResponseMessageHelper,            
             ILogger<PatchAdviserDetailHttpTrigger> logger)
         {
-            _resourceHelper = resourceHelper;
             _adviserDetailPatchService = adviserDetailPatchService;
             _validate = validate;
             _loggerHelper = loggerHelper;
             _httpRequestHelper = httpRequestHelper;
-            _httpResponseMessageHelper = httpResponseMessageHelper;            
             _logger = logger;
         }
 

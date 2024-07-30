@@ -1,48 +1,40 @@
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using NCS.DSS.AdviserDetail.Cosmos.Helper;
 using NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Validation;
-using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
 {
     public class PostAdviserDetailHttpTrigger
     {
-        private readonly IResourceHelper _resourceHelper;
         private readonly IPostAdviserDetailHttpTriggerService _AdviserDetailPostService;
         private readonly IValidate _validate;
         private readonly ILoggerHelper _loggerHelper;
         private readonly IHttpRequestHelper _httpRequestHelper;
-        private readonly IHttpResponseMessageHelper _httpResponseMessageHelper;        
         private readonly ILogger _logger;
 
-        public PostAdviserDetailHttpTrigger(IResourceHelper resourceHelper,
+        public PostAdviserDetailHttpTrigger(
             IPostAdviserDetailHttpTriggerService AdviserDetailPostService,
             IValidate validate,
             ILoggerHelper loggerHelper,
             IHttpRequestHelper httpRequestHelper,
-            IHttpResponseMessageHelper httpResponseMessageHelper,            
             ILogger<PostAdviserDetailHttpTrigger> logger)
         {
-            _resourceHelper = resourceHelper;
             _AdviserDetailPostService = AdviserDetailPostService;
             _validate = validate;
             _loggerHelper = loggerHelper;
             _httpRequestHelper = httpRequestHelper;
-            _httpResponseMessageHelper = httpResponseMessageHelper;            
             _logger = logger;
         }
 

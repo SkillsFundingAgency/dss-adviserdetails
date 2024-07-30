@@ -7,9 +7,6 @@
     <ImplicitUsings>enabled</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="local.settings.json" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.18.0" />
     <PackageReference Include="DFC.Common.Standard" Version="0.1.4" />
     <PackageReference Include="DFC.HTTP.Standard" Version="0.1.11" />
