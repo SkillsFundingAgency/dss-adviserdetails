@@ -32,7 +32,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         private string _adviserDetailString;
         private AdviserDetailFunction.PatchAdviserDetailHttpTrigger _function;
         private Mock<ILogger<AdviserDetailFunction.PatchAdviserDetailHttpTrigger>> _logger;
-
+        private Mock<IConvertToDynamic> _dynamicHelper;
         [SetUp]
         public void Setup()
         {
@@ -42,6 +42,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _validate = new Validate();
             _loggerHelper = new Mock<ILoggerHelper>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
+            _dynamicHelper = new Mock<IConvertToDynamic>();
             _PatchAdviserDetailsHttpTriggerService = new Mock<IPatchAdviserDetailHttpTriggerService>();
             _adviserDetailString = JsonConvert.SerializeObject(_adviserDetail);
             _logger = new Mock<ILogger<AdviserDetailFunction.PatchAdviserDetailHttpTrigger>>();
@@ -50,7 +51,8 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
                 _validate, 
                 _loggerHelper.Object, 
                 _httpRequestHelper.Object, 
-                _logger.Object);
+                _logger.Object,
+                _dynamicHelper.Object);
         }
 
         [Test]

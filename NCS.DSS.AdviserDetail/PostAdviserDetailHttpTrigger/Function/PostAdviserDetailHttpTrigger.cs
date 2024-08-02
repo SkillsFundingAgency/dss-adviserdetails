@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using NCS.DSS.AdviserDetail.Models;
 using NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Validation;
 using System;
@@ -23,19 +24,21 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
         private readonly ILoggerHelper _loggerHelper;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly ILogger _logger;
-
+        private readonly IConvertToDynamic _convertToDynamic;
         public PostAdviserDetailHttpTrigger(
             IPostAdviserDetailHttpTriggerService AdviserDetailPostService,
             IValidate validate,
             ILoggerHelper loggerHelper,
             IHttpRequestHelper httpRequestHelper,
-            ILogger<PostAdviserDetailHttpTrigger> logger)
+            ILogger<PostAdviserDetailHttpTrigger> logger,
+            IConvertToDynamic convertToDynamic)
         {
             _AdviserDetailPostService = AdviserDetailPostService;
             _validate = validate;
             _loggerHelper = loggerHelper;
             _httpRequestHelper = httpRequestHelper;
             _logger = logger;
+            _convertToDynamic = convertToDynamic;
         }
 
         [Function("Post")]
@@ -82,7 +85,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
             catch (Newtonsoft.Json.JsonException ex)
             {
                 _loggerHelper.LogError(_logger, correlationGuid, "Unable to retrieve body from req", ex);
-                return new UnprocessableEntityObjectResult(ex);
+                return new UnprocessableEntityObjectResult(_convertToDynamic.ExcludeProperty(ex, ["TargetSite"]));
             }
 
             if (AdviserDetailRequest == null)

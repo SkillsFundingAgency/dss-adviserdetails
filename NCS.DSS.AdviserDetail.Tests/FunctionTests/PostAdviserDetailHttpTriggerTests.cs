@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.AdviserDetail.Cosmos.Helper;
+using NCS.DSS.AdviserDetail.Models;
 using NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Validation;
 using NCS.DSS.AdviserDetails.Models;
@@ -35,7 +36,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         private Models.AdviserDetail _adviserdetail;
         private AdviserDetailFunction.PostAdviserDetailHttpTrigger _function;
         private Mock<ILogger<AdviserDetailFunction.PostAdviserDetailHttpTrigger>> _logger;
-
+        private Mock<IConvertToDynamic> _dynamicHelper;
         [SetUp]
         public void Setup()
         {
@@ -44,6 +45,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _request.Headers.Add(TouchpointIdHeaderParamKey, TouchpointIdHeaderParamValue);
             _request.Headers.Add(ApimUrlHeaderParameterKey, ApimUrlHeaderParameterValue);            
             _validate = new Validate();
+            _dynamicHelper = new Mock<IConvertToDynamic>();
             _loggerHelper = new Mock<ILoggerHelper>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _postAdviserDetailHttpTriggerService = new Mock<IPostAdviserDetailHttpTriggerService>();
@@ -53,7 +55,8 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
                 _validate, 
                 _loggerHelper.Object, 
                 _httpRequestHelper.Object, 
-                _logger.Object);
+                _logger.Object,
+                _dynamicHelper.Object);
         }
 
         [Test]
@@ -86,7 +89,8 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
                 validate.Object,
                 _loggerHelper.Object,
                 _httpRequestHelper.Object,
-                _logger.Object);
+                _logger.Object,
+                _dynamicHelper.Object);
 
             // Act
             var result = await RunFunction(ValidAdviserDetailId);

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NCS.DSS.AdviserDetail.Cosmos.Provider;
 using NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Service;
+using NCS.DSS.AdviserDetail.Models;
 using NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Validation;
@@ -25,6 +26,7 @@ var host = new HostBuilder()
         services.AddScoped<IPatchAdviserDetailHttpTriggerService, PatchAdviserDetailHttpTriggerService>();
         services.AddScoped<IPatchAdviserDetailHttpTriggerService, PatchAdviserDetailHttpTriggerService>();
         services.AddScoped<IAdviserDetailPatchService, AdviserDetailPatchService>();
+        services.AddSingleton<IConvertToDynamic, ConvertToDynamic>();
     })
     .Build();
 
