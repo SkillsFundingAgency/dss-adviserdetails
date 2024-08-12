@@ -11,52 +11,53 @@ namespace NCS.DSS.AdviserDetail.Tests.ModelTests
         public void AdviserDetailTests_PopulatesDefaultValues_WhenSetDefaultValuesIsCalled()
         {
             // Arrange
-            var diversity = new Models.AdviserDetail();
+            var adviserDetail = new Models.AdviserDetail();
             
             // Act
-            diversity.SetDefaultValues();
+            adviserDetail.SetDefaultValues();
 
-            // Assert
-            Assert.IsNotNull(diversity.LastModifiedDate);
+            // Assert            
+            Assert.That(adviserDetail.LastModifiedDate, Is.Not.Null);
         }
 
         [Test]
         public void AdviserDetailTests_CheckLastModifiedDateDoesNotGetPopulated_WhenSetDefaultValuesIsCalled()
         {
             // Arrange
-            var diversity = new Models.AdviserDetail { LastModifiedDate = DateTime.MaxValue };
+            var adviserDetail = new Models.AdviserDetail { LastModifiedDate = DateTime.MaxValue };
 
             // Act
-            diversity.SetDefaultValues();
+            adviserDetail.SetDefaultValues();
 
-            // Assert
-            Assert.AreEqual(DateTime.MaxValue, diversity.LastModifiedDate);
+            // Assert            
+            Assert.That(adviserDetail.LastModifiedDate, Is.EqualTo(DateTime.MaxValue));
         }
 
         [Test]
         public void AdviserDetailTests_CheckAdviserDetailIdIsSet_WhenSetIdsIsCalled()
         {
             // Arrange
-            var diversity = new Models.AdviserDetail();
+            var adviserDetail = new Models.AdviserDetail();
 
             // Act
-            diversity.SetIds(It.IsAny<string>(), It.IsAny<string>());
+            adviserDetail.SetIds(It.IsAny<string>(), It.IsAny<string>());
 
-            // Assert
-            Assert.AreNotSame(Guid.Empty, diversity.AdviserDetailId);
+            // Assert            
+            Assert.That(adviserDetail.AdviserDetailId, Is.Not.SameAs(Guid.Empty));
         }
 
         [Test]
         public void AdviserDetailTests_CheckLastModifiedTouchpointIdIsSet_WhenSetIdsIsCalled()
         {
             // Arrange
-            var diversity = new Models.AdviserDetail();
+            var adviserDetail = new Models.AdviserDetail();
 
             // Act
-            diversity.SetIds("0000000000", It.IsAny<string>());
+            adviserDetail.SetIds("0000000000", It.IsAny<string>());
 
-            // Assert
-            Assert.AreEqual("0000000000", diversity.LastModifiedTouchpointId);
+            // Assert            
+            Assert.That(adviserDetail.LastModifiedTouchpointId, Is.EqualTo("0000000000"));
+
         }
     }
 }
