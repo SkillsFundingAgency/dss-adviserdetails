@@ -12,7 +12,7 @@ namespace NCS.DSS.AdviserDetail.APIDefinition
         public const string ApiDefinitionName = "API-Definition";
         public const string ApiDefRoute = ApiTitle + "/" + ApiDefinitionName;
         public const string ApiDescription = "To support the Data Collections integration with DSS SubcontractorId has been added as an attribute.";
-        public const string ApiVersion = "2.0.0";
+        public const string ApiVersion = "3.0.0";
         private ISwaggerDocumentGenerator swaggerDocumentGenerator;
 
         public GenerateAdviserDetailsSwaggerDoc(ISwaggerDocumentGenerator swaggerDocumentGenerator)
