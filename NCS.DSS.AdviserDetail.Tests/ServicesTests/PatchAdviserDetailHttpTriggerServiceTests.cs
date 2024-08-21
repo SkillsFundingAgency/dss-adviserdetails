@@ -49,7 +49,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var result = _adviserdetailPatchHttpTriggerService.PatchResource(null, It.IsAny<AdviserDetailPatch>());
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
 
@@ -60,7 +60,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var result = _adviserdetailPatchHttpTriggerService.PatchResource(It.IsAny<string>(), null);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -73,7 +73,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -86,7 +86,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -99,7 +99,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -134,9 +134,8 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<Models.AdviserDetail>(result);
-
+            Assert.That(result, Is.Not.Null);            
+            Assert.That(result, Is.InstanceOf<Models.AdviserDetail>());
         }
 
         [Test]
@@ -149,7 +148,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var result = await _adviserdetailPatchHttpTriggerService.GetAdviserDetailByIdAsync(It.IsAny<Guid>());
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -162,8 +161,8 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var result = await _adviserdetailPatchHttpTriggerService.GetAdviserDetailByIdAsync(It.IsAny<Guid>());
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<string>(result);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.InstanceOf<string>());
         }
     }
 }

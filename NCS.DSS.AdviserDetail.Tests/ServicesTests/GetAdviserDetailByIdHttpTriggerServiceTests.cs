@@ -33,7 +33,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var result = await _adviserdetailHttpTriggerService.GetAdviserDetailAsync(_adviserdetailId);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -46,8 +46,8 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var result = await _adviserdetailHttpTriggerService.GetAdviserDetailAsync(_adviserdetailId);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<Models.AdviserDetail>(result);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.InstanceOf<Models.AdviserDetail>());
         }
     }
 }
