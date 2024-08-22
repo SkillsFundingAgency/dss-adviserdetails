@@ -20,7 +20,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ValidationTests
 
             // Assert            
             Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
-            Assert.That(result, Is.Not.Null);            
+            Assert.That(result, Is.Not.Null);
             Assert.That(result.Count, Is.EqualTo(2));
         }
 

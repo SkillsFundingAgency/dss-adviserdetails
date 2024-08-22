@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NCS.DSS.AdviserDetail.Cosmos.Provider;
+using System;
 using System.Threading.Tasks;
-using NCS.DSS.AdviserDetail.Cosmos.Provider;
 
 namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Service
 {

@@ -21,14 +21,14 @@ namespace NCS.DSS.AdviserDetail.APIDefinition
         }
 
         [Function(ApiDefinitionName)]
-        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)]HttpRequest req)
+        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)] HttpRequest req)
         {
             var swagger = swaggerDocumentGenerator.GenerateSwaggerDocument(req, ApiTitle, ApiDescription,
                 ApiDefinitionName, ApiVersion, Assembly.GetExecutingAssembly());
 
             if (string.IsNullOrEmpty(swagger))
                 return new NoContentResult();
-            
+
             return new OkObjectResult(swagger);
         }
     }

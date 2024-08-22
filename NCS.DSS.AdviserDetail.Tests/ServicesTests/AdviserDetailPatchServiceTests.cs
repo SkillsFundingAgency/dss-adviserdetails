@@ -41,7 +41,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         {
             // Arrange
             var adviserDetailPatch = new AdviserDetailPatch { AdviserContactNumber = "1111" };
-           
+
             // Act
             var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
             var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);

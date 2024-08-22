@@ -12,7 +12,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ModelTests
         {
             // Arrange
             var adviserDetail = new Models.AdviserDetail();
-            
+
             // Act
             adviserDetail.SetDefaultValues();
 
