@@ -13,7 +13,8 @@ using NCS.DSS.AdviserDetail.Validation;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
-    .ConfigureServices(services => {
+    .ConfigureServices(services =>
+    {
         services.AddLogging();
         services.AddSingleton<IValidate, Validate>();
         services.AddSingleton<ILoggerHelper, LoggerHelper>();

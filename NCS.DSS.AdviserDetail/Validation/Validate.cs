@@ -1,7 +1,7 @@
-﻿using System;
+﻿using NCS.DSS.AdviserDetails.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using NCS.DSS.AdviserDetails.Models;
 
 namespace NCS.DSS.AdviserDetail.Validation
 {

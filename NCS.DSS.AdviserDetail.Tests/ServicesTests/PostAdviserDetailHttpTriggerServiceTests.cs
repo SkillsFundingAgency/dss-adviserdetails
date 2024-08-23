@@ -64,7 +64,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.Setup(x=>x.CreateAdviserDetailAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult(resourceResponse));
+            _documentDbProvider.Setup(x => x.CreateAdviserDetailAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult(resourceResponse));
 
             // Act
             var result = await _postAdviserDetailHttpTriggerService.CreateAsync(_adviserdetail);

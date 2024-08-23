@@ -1,8 +1,8 @@
-﻿using System;
+﻿using NCS.DSS.AdviserDetail.Cosmos.Provider;
+using NCS.DSS.AdviserDetail.Models;
+using System;
 using System.Net;
 using System.Threading.Tasks;
-using NCS.DSS.AdviserDetail.Cosmos.Provider;
-using NCS.DSS.AdviserDetail.Models;
 
 namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service
 {

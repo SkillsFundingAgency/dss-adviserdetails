@@ -27,7 +27,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         public async Task GetAdviserDetailByIdHttpTriggerServiceTests_GetAdviserDetailForCustomerAsyncc_ReturnsNullWhenResourceCannotBeFound()
         {
             // Arrange
-            _documentDbProvider.Setup(x=>x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult<Models.AdviserDetail>(null));
+            _documentDbProvider.Setup(x => x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult<Models.AdviserDetail>(null));
 
             // Act
             var result = await _adviserdetailHttpTriggerService.GetAdviserDetailAsync(_adviserdetailId);
@@ -40,7 +40,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         public async Task GetAdviserDetailByIdHttpTriggerServiceTests_GetAdviserDetailForCustomerAsync_ReturnsResource()
         {
             // Arrange
-            _documentDbProvider.Setup(x=>x.GetAdviserDetailByIdAsync(_adviserdetailId)).Returns(Task.FromResult(_adviserdetail));
+            _documentDbProvider.Setup(x => x.GetAdviserDetailByIdAsync(_adviserdetailId)).Returns(Task.FromResult(_adviserdetail));
 
             // Act
             var result = await _adviserdetailHttpTriggerService.GetAdviserDetailAsync(_adviserdetailId);

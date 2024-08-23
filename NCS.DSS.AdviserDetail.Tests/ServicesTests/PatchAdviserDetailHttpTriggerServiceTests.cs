@@ -67,7 +67,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         public async Task PatchAdviserDetailsHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenAdviserDetailPatchServicePatchJsonIsNullOrEmpty()
         {
             // Arrange
-            _adviserdetailPatchService.Setup(x=>x.Patch(It.IsAny<string>(), It.IsAny<AdviserDetailPatch>())).Returns<string>(null);
+            _adviserdetailPatchService.Setup(x => x.Patch(It.IsAny<string>(), It.IsAny<AdviserDetailPatch>())).Returns<string>(null);
 
             // Act
             var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);
@@ -80,7 +80,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         public async Task PatchAdviserDetailsHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenResourceCannotBeUpdated()
         {
             // Arrange
-            _documentDbProvider.Setup(x=>x.UpdateAdviserDetailAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult<ResourceResponse<Document>>(null));
+            _documentDbProvider.Setup(x => x.UpdateAdviserDetailAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult<ResourceResponse<Document>>(null));
 
             // Act
             var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);
@@ -93,7 +93,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         public async Task PatchAdviserDetailsHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenResourceCannotBeFound()
         {
             // Arrange
-            _documentDbProvider.Setup(x=>x.CreateAdviserDetailAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult(new ResourceResponse<Document>(null)));
+            _documentDbProvider.Setup(x => x.CreateAdviserDetailAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult(new ResourceResponse<Document>(null)));
 
             // Act
             var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);
@@ -128,13 +128,13 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.Setup(x=>x.UpdateAdviserDetailAsync(_adviserDetailString, _adviserDetailId)).Returns(Task.FromResult(resourceResponse));
+            _documentDbProvider.Setup(x => x.UpdateAdviserDetailAsync(_adviserDetailString, _adviserDetailId)).Returns(Task.FromResult(resourceResponse));
 
             // Act
             var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);
 
             // Assert
-            Assert.That(result, Is.Not.Null);            
+            Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.InstanceOf<Models.AdviserDetail>());
         }
 
@@ -142,7 +142,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         public async Task PatchAdviserDetailsHttpTriggerServiceTests_GetActionPlanForCustomerAsync_ReturnsNullWhenResourceHasNotBeenFound()
         {
             // Arrange
-            _documentDbProvider.Setup(x=>x.GetAdviserDetailsByIdToUpdateAsync(It.IsAny<Guid>())).Returns(Task.FromResult<string>(null));
+            _documentDbProvider.Setup(x => x.GetAdviserDetailsByIdToUpdateAsync(It.IsAny<Guid>())).Returns(Task.FromResult<string>(null));
 
             // Act
             var result = await _adviserdetailPatchHttpTriggerService.GetAdviserDetailByIdAsync(It.IsAny<Guid>());
@@ -155,7 +155,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         public async Task PatchAdviserDetailsHttpTriggerServiceTests_GetActionPlanForCustomerAsync_ReturnsResourceWhenResourceHasBeenFound()
         {
             // Arrange
-            _documentDbProvider.Setup(x=>x.GetAdviserDetailsByIdToUpdateAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_json));
+            _documentDbProvider.Setup(x => x.GetAdviserDetailsByIdToUpdateAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_json));
 
             // Act
             var result = await _adviserdetailPatchHttpTriggerService.GetAdviserDetailByIdAsync(It.IsAny<Guid>());

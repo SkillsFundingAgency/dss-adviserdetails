@@ -47,7 +47,7 @@ namespace NCS.DSS.AdviserDetail.Models
         [Example(Description = "01234567899876543210")]
         public string SubcontractorId { get; set; }
 
-        [JsonIgnore (Condition = JsonIgnoreCondition.Always)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         public string CreatedBy { get; set; }
 
         public void SetDefaultValues()

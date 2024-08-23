@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-using DFC.Common.Standard.Logging;
+﻿using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +9,9 @@ using NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Validation;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 using AdviserDetailFunction = NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function;
 
 namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
@@ -37,7 +37,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         public void Setup()
         {
             _adviserDetail = new Models.AdviserDetail();
-            _adviserdetailPatch = new AdviserDetailPatch();            
+            _adviserdetailPatch = new AdviserDetailPatch();
 
             _validate = new Validate();
             _loggerHelper = new Mock<ILoggerHelper>();
@@ -47,10 +47,10 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _adviserDetailString = JsonConvert.SerializeObject(_adviserDetail);
             _logger = new Mock<ILogger<AdviserDetailFunction.PatchAdviserDetailHttpTrigger>>();
             _function = new AdviserDetailFunction.PatchAdviserDetailHttpTrigger(
-                _PatchAdviserDetailsHttpTriggerService.Object, 
-                _validate, 
-                _loggerHelper.Object, 
-                _httpRequestHelper.Object, 
+                _PatchAdviserDetailsHttpTriggerService.Object,
+                _validate,
+                _loggerHelper.Object,
+                _httpRequestHelper.Object,
                 _logger.Object,
                 _dynamicHelper.Object);
         }
@@ -59,7 +59,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         public async Task PatchAdviserDetailsHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
             // Arrange
-            _httpRequestHelper.Setup(x=>x.GetDssTouchpointId(_request)).Returns((string)null);
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns((string)null);
 
             // Act
             var result = await RunFunction(ValidAdviserDetailsId);
@@ -72,8 +72,8 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         public async Task PatchAdviserDetailsHttpTrigger_ReturnsStatusCodeBadRequest_WhenAdviserDetailsIdIsInvalid()
         {
             // Arrange
-            _httpRequestHelper.Setup(x=>x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _httpRequestHelper.Setup(x=>x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
 
             // Act
             var result = await RunFunction(InValidId);
@@ -86,11 +86,11 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         public async Task PatchAdviserDetailsHttpTrigger_ReturnsStatusCodeNoContent_WhenAdviserDetailsPatchCantBePatched()
         {
             // Arrange
-            _PatchAdviserDetailsHttpTriggerService.Setup(x=>x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetailString));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetailString));
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
-            _PatchAdviserDetailsHttpTriggerService.Setup(x=>x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AdviserDetailPatch>())).Returns((string)null);
-            _httpRequestHelper.Setup(x=>x.GetResourceFromRequest<AdviserDetailPatch>(_request)).Returns(Task.FromResult(_adviserdetailPatch));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AdviserDetailPatch>())).Returns((string)null);
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<AdviserDetailPatch>(_request)).Returns(Task.FromResult(_adviserdetailPatch));
 
             // Act
             var result = await RunFunction(ValidAdviserDetailsId);
@@ -104,8 +104,8 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _PatchAdviserDetailsHttpTriggerService.Setup(x=>x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetailString));
-            _PatchAdviserDetailsHttpTriggerService.Setup(x=>x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.AdviserDetail>(null));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetailString));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.AdviserDetail>(null));
             _PatchAdviserDetailsHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AdviserDetailPatch>())).Returns(_adviserDetailString);
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<AdviserDetailPatch>(_request)).Returns(Task.FromResult(_adviserdetailPatch));
 
@@ -121,8 +121,8 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _PatchAdviserDetailsHttpTriggerService.Setup(x=>x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetailString));
-            _PatchAdviserDetailsHttpTriggerService.Setup(x=>x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.AdviserDetail>(null));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetailString));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.AdviserDetail>(null));
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<AdviserDetailPatch>(_request)).Returns(Task.FromResult(_adviserdetailPatch));
             _PatchAdviserDetailsHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AdviserDetailPatch>())).Returns(_adviserDetailString);
 
@@ -139,7 +139,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _PatchAdviserDetailsHttpTriggerService.Setup(x => x.GetAdviserDetailByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetailString));
-            _PatchAdviserDetailsHttpTriggerService.Setup(x=>x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetail));
+            _PatchAdviserDetailsHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult(_adviserDetail));
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<AdviserDetailPatch>(_request)).Returns(Task.FromResult(_adviserdetailPatch));
             _PatchAdviserDetailsHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AdviserDetailPatch>())).Returns(_adviserDetailString);
 

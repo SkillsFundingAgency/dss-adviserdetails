@@ -4,13 +4,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NCS.DSS.AdviserDetail.Cosmos.Helper;
 using NCS.DSS.AdviserDetail.Models;
 using NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Validation;
 using NCS.DSS.AdviserDetails.Models;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -27,7 +25,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         private const string TouchpointIdHeaderParamKey = "touchpointId";
         private const string ApimUrlHeaderParameterKey = "apimurl";
         private string ApimUrlHeaderParameterValue = "http://localhost:7071/";
-        private string TouchpointIdHeaderParamValue = "9000000000";        
+        private string TouchpointIdHeaderParamValue = "9000000000";
         private HttpRequest _request;
         private IValidate _validate;
         private Mock<ILoggerHelper> _loggerHelper;
@@ -43,7 +41,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _adviserdetail = new Models.AdviserDetail() { AdviserName = "testing" };
             _request = new DefaultHttpContext().Request;
             _request.Headers.Add(TouchpointIdHeaderParamKey, TouchpointIdHeaderParamValue);
-            _request.Headers.Add(ApimUrlHeaderParameterKey, ApimUrlHeaderParameterValue);            
+            _request.Headers.Add(ApimUrlHeaderParameterKey, ApimUrlHeaderParameterValue);
             _validate = new Validate();
             _dynamicHelper = new Mock<IConvertToDynamic>();
             _loggerHelper = new Mock<ILoggerHelper>();
@@ -52,9 +50,9 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _logger = new Mock<ILogger<AdviserDetailFunction.PostAdviserDetailHttpTrigger>>();
             _function = new AdviserDetailFunction.PostAdviserDetailHttpTrigger(
                 _postAdviserDetailHttpTriggerService.Object,
-                _validate, 
-                _loggerHelper.Object, 
-                _httpRequestHelper.Object, 
+                _validate,
+                _loggerHelper.Object,
+                _httpRequestHelper.Object,
                 _logger.Object,
                 _dynamicHelper.Object);
         }
@@ -63,7 +61,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         public async Task PostAdviserDetailHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
             // Arrange
-            _httpRequestHelper.Setup(x=>x.GetDssTouchpointId(_request)).Returns((string)null);
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns((string)null);
 
             // Act
             var result = await RunFunction(ValidAdviserDetailId);
@@ -136,10 +134,10 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         public async Task PostAdviserDetailHttpTrigger_ReturnsStatusCodeCreated_WhenRequestIsValid()
         {
             // Arrange
-            _httpRequestHelper.Setup(x=>x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _httpRequestHelper.Setup(x=>x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
-            _httpRequestHelper.Setup(x=>x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult(_adviserdetail));
-            _postAdviserDetailHttpTriggerService.Setup(x=>x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult<Models.AdviserDetail>(_adviserdetail));
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AdviserDetail>(_request)).Returns(Task.FromResult(_adviserdetail));
+            _postAdviserDetailHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult<Models.AdviserDetail>(_adviserdetail));
 
             // Act
             var result = await RunFunction(ValidAdviserDetailId);
