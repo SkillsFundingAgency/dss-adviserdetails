@@ -1,6 +1,6 @@
-﻿using System.Net;
+﻿using NCS.DSS.AdviserDetail.Cosmos.Provider;
+using System.Net;
 using System.Threading.Tasks;
-using NCS.DSS.AdviserDetail.Cosmos.Provider;
 
 namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service
 {

@@ -32,8 +32,8 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             // Act
             var result = _adviserDetailPatchService.Patch(string.Empty, It.IsAny<AdviserDetailPatch>());
 
-            // Assert
-            Assert.IsNull(result);
+            // Assert            
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -41,13 +41,13 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         {
             // Arrange
             var adviserDetailPatch = new AdviserDetailPatch { AdviserContactNumber = "1111" };
-           
+
             // Act
             var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
             var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
-            // Assert
-            Assert.AreEqual("1111", adviserDetail.AdviserContactNumber);
+            // Assert            
+            Assert.That(adviserDetail.AdviserContactNumber, Is.EqualTo("1111"));
         }
 
         [Test]
@@ -60,8 +60,8 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
             var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
-            // Assert
-            Assert.AreEqual("1@1.com", adviserDetail.AdviserEmailAddress);
+            // Assert            
+            Assert.That(adviserDetail.AdviserEmailAddress, Is.EqualTo("1@1.com"));
         }
 
         [Test]
@@ -74,8 +74,8 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
             var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
-            // Assert
-            Assert.AreEqual("name", adviserDetail.AdviserName);
+            // Assert            
+            Assert.That(adviserDetail.AdviserName, Is.EqualTo("name"));
         }
 
 
@@ -89,8 +89,8 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
             var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
-            // Assert
-            Assert.AreEqual(DateTime.MaxValue, adviserDetail.LastModifiedDate);
+            // Assert            
+            Assert.That(adviserDetail.LastModifiedDate, Is.EqualTo(DateTime.MaxValue));
         }
 
         [Test]
@@ -103,8 +103,8 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
             var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
-            // Assert
-            Assert.AreEqual("0000000111", adviserDetail.LastModifiedTouchpointId);
+            // Assert            
+            Assert.That(adviserDetail.LastModifiedTouchpointId, Is.EqualTo("0000000111"));
         }
 
         [Test]
@@ -117,8 +117,8 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
             var patchedAdviserDetail = _adviserDetailPatchService.Patch(_json, adviserDetailPatch);
             var adviserDetail = JsonConvert.DeserializeObject<Models.AdviserDetail>(patchedAdviserDetail);
 
-            // Assert
-            Assert.AreEqual("0000000111", adviserDetail.SubcontractorId);
+            // Assert            
+            Assert.That(adviserDetail.SubcontractorId, Is.EqualTo("0000000111"));
         }
     }
 }

@@ -18,10 +18,10 @@ namespace NCS.DSS.AdviserDetail.Tests.ValidationTests
             // Act
             var result = validation.ValidateResource(AdviserDetail, true);
 
-            // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
+            // Assert            
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(2));
         }
 
         [Test]
@@ -38,9 +38,9 @@ namespace NCS.DSS.AdviserDetail.Tests.ValidationTests
             var result = validation.ValidateResource(AdviserDetail, true);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(2));
         }
     }
 }
