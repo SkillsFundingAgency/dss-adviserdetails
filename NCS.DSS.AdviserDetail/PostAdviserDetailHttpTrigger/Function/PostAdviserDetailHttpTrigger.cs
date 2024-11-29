@@ -47,7 +47,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
         {
             var functionName = nameof(PostAdviserDetailHttpTrigger);
 
-            _logger.LogInformation($"Entered {functionName}");
+            _logger.LogInformation("Entered {functionName}",functionName);
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
@@ -62,50 +62,50 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _logger.LogError($"{correlationGuid} Unable to locate 'APIM-TouchpointId' in request header.");
-                return new BadRequestObjectResult("Unable to locate 'APIM-TouchpointId' in request header.");
+                _logger.LogError("{CorrelationGuid} Unable to locate 'TouchpointId' in request header.",correlationId);
+                return new BadRequestObjectResult("Unable to locate 'TouchpointId' in request header.");
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
-                _logger.LogWarning($"{correlationGuid} Unable to locate 'SubcontractorId' in request header");
+                _logger.LogWarning("{CorrelationGuid} Unable to locate 'SubcontractorId' in request header", correlationId);
 
             Models.AdviserDetail AdviserDetailRequest;
 
             try
             {
-                _logger.LogInformation($"{correlationGuid} Attempt to get resource from body of the request");
+                _logger.LogInformation("{CorrelationGuid} Attempt to get resource from body of the request", correlationId);
                 AdviserDetailRequest = await _httpRequestHelper.GetResourceFromRequest<Models.AdviserDetail>(req);
             }
             catch (Newtonsoft.Json.JsonException ex)
             {
-                _logger.LogError($"{correlationGuid} Unable to retrieve body from req", ex);
+                _logger.LogError("{CorrelationGuid} Unable to retrieve body from req {Exception}", correlationId, ex.Message);
                 return new UnprocessableEntityObjectResult(_convertToDynamic.ExcludeProperty(ex, ["TargetSite"]));
             }
 
             if (AdviserDetailRequest == null)
             {
-                _logger.LogError($"{correlationGuid} Adviser Detail request is null");
+                _logger.LogError("{CorrelationGuid} Adviser Detail request is null", correlationId);
                 return new UnprocessableEntityResult();
             }
 
-            _logger.LogInformation($"{correlationGuid} Attempt to set id's for Adviser Detail");
+            _logger.LogInformation("{CorrelationGuid} Attempt to set id's for Adviser Detail", correlationId);
             AdviserDetailRequest.SetIds(touchpointId, subcontractorId);
 
 
-            _logger.LogInformation($"{correlationGuid} Attempt to validate resource");
+            _logger.LogInformation("{CorrelationGuid} Attempt to validate resource", correlationId);
             var errors = _validate.ValidateResource(AdviserDetailRequest, true);
 
             if (errors != null && errors.Any())
             {
-                _logger.LogError($"{correlationGuid} validation errors with resource");
+                _logger.LogError("{CorrelationGuid} validation errors with resource", correlationId);
                 return new UnprocessableEntityObjectResult(errors);
             }
 
-            _logger.LogInformation($"{correlationGuid} Attempting to Create Adviser Detail");
+            _logger.LogInformation("{CorrelationGuid} Attempting to Create Adviser Detail", correlationId);
             var adviserdetail = await _AdviserDetailPostService.CreateAsync(AdviserDetailRequest);
 
-            _logger.LogInformation($"Exiting {functionName}");
+            _logger.LogInformation("Exiting {functionName}", functionName);
 
             return adviserdetail == null
                 ? new BadRequestResult()

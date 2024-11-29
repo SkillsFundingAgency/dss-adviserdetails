@@ -7,8 +7,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="local.settings.json" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.18.0" />
-    <PackageReference Include="DFC.Common.Standard" Version="0.1.4" />
     <PackageReference Include="DFC.HTTP.Standard" Version="0.1.11" />
     <PackageReference Include="DFC.JSON.Standard" Version="0.1.4" />
     <PackageReference Include="DFC.Swagger.Standard" Version="0.1.30" />
@@ -25,23 +27,8 @@
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="local.settings.json">
-      <Generator>SettingsSingleFileGenerator</Generator>
-    </None>
-    <None Update="local.settings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-      <LastGenOutput>local.settings.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="local.settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>local.settings.json</DependentUpon>
-    </Compile>
   </ItemGroup>
 </Project>

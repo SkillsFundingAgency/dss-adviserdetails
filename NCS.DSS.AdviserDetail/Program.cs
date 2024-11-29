@@ -1,6 +1,7 @@
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,7 +28,13 @@ namespace NCS.DSS.AdviserDetail
                         services.AddSingleton<IValidate, Validate>();
                         services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
                         services.AddSingleton<IJsonHelper, JsonHelper>();
-                        services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
+                        services.AddSingleton<ICosmosDBProvider, CosmosDBProvider>();
+                        services.AddSingleton(s =>
+                        {
+                            var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
+                            var connectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
+                            return new CosmosClient(connectionString, options);
+                        });
                         services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
                         services.AddScoped<IGetAdviserDetailByIdHttpTriggerService, GetAdviserDetailByIdHttpTriggerService>();
                         services.AddScoped<IPostAdviserDetailHttpTriggerService, PostAdviserDetailHttpTriggerService>();

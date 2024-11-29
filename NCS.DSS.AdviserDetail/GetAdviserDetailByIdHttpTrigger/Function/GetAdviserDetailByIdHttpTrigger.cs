@@ -43,7 +43,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
         {
             var functionName = nameof(GetAdviserDetailByIdHttpTrigger);
 
-            _logger.LogInformation($"Entered {functionName}");
+            _logger.LogInformation("Entered {functionName}",functionName);
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
@@ -60,24 +60,24 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _logger.LogWarning($"{correlationGuid} Unable to locate 'TouchpointId' in request header");
+                _logger.LogWarning("{CorrelationGuid} Unable to locate 'TouchpointId' in request header",correlationId);
                 return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
 
-            _logger.LogInformation($"{correlationGuid} Get AdviserDetail By Id C# HTTP trigger function  processed a request. By Touchpoint: {touchpointId}");
+            _logger.LogInformation("{CorrelationGuid} Get AdviserDetail By Id C# HTTP trigger function  processed a request. By Touchpoint: {touchpointId}", correlationId,touchpointId);
 
 
             if (!Guid.TryParse(adviserDetailId, out var AdviserDetailGuid))
             {
-                _logger.LogWarning($"{correlationGuid} Unable to parse 'adviserDetailId' to a Guid: {adviserDetailId}");
+                _logger.LogWarning("{CorrelationGuid} Unable to parse 'adviserDetailId' to a Guid: {adviserDetailId}", correlationId,adviserDetailId);
                 return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(AdviserDetailGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
             }
 
 
-            _logger.LogInformation($"{correlationGuid} Attempting to get Adviser Detail {AdviserDetailGuid}");
+            _logger.LogInformation("{CorrelationGuid} Attempting to get Adviser Detail {AdviserDetailGuid}", correlationId,adviserDetailId);
             var AdviserDetail = await _AdviserDetailGetService.GetAdviserDetailAsync(AdviserDetailGuid);
 
-            _logger.LogInformation($"Exiting {functionName}");
+            _logger.LogInformation("Exiting {functionName}",functionName);
 
             return AdviserDetail == null ?
                 new NoContentResult() :

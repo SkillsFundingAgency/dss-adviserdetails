@@ -49,7 +49,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
         {
             var functionName = nameof(PatchAdviserDetailHttpTrigger);
 
-            _logger.LogInformation($"Entered {functionName}");
+            _logger.LogInformation("Entered {functionName}", functionName);
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
@@ -64,18 +64,18 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _logger.LogInformation($"{correlationGuid} Unable to locate 'APIM-TouchpointId' in request header.");
+                _logger.LogInformation("{CorrelationGuid} Unable to locate 'TouchpointId' in request header.", correlationGuid);
                 return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
-                _logger.LogWarning($"{correlationGuid} Unable to locate 'SubcontractorId' in request header");
+                _logger.LogWarning("{CorrelationGuid} Unable to locate 'SubcontractorId' in request header", correlationGuid);
 
 
             if (!Guid.TryParse(adviserDetailId, out var adviserDetailGuid))
             {
-                _logger.LogWarning($"{correlationGuid} Unable to parse 'adviserDetailId' to a Guid: {adviserDetailId}");
+                _logger.LogWarning("{CorrelationGuid} Unable to parse 'adviserDetailId' to a Guid: {AdviserDetailId}", correlationGuid, adviserDetailId);
                 return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(adviserDetailGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
             }
 
@@ -83,39 +83,39 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 
             try
             {
-                _logger.LogInformation($"{correlationGuid} Attempt to get resource from body of the request");
+                _logger.LogInformation("{CorrelationGuid} Attempt to get resource from body of the request", correlationGuid);
                 adviserDetailPatchRequest = await _httpRequestHelper.GetResourceFromRequest<Models.AdviserDetailPatch>(req);
             }
             catch (Newtonsoft.Json.JsonException ex)
             {
-                _logger.LogError($"{correlationGuid} Unable to retrieve body from req", ex);
+                _logger.LogError("{CorrelationGuid} Unable to retrieve body from req {Exception}", correlationGuid, ex.Message);
                 return new UnprocessableEntityObjectResult(_convertToDynamic.ExcludeProperty(ex, ["TargetSite"]));
             }
 
             if (adviserDetailPatchRequest == null)
             {
-                _logger.LogWarning($"{correlationGuid} Adviser Detail patch request is null");
+                _logger.LogWarning("{CorrelationGuid} Adviser Detail patch request is null", correlationGuid);
                 return new UnprocessableEntityObjectResult(req);
             }
 
-            _logger.LogInformation($"{correlationGuid} Attempt to set id's for Adviser Detail patch");
+            _logger.LogInformation("{CorrelationGuid} Attempt to set id's for Adviser Detail patch", correlationGuid);
             adviserDetailPatchRequest.SetIds(touchpointId, subcontractorId);
 
-            _logger.LogInformation($"{correlationGuid} Attempt to validate resource");
+            _logger.LogInformation("{CorrelationGuid} Attempt to validate resource", correlationGuid);
             var errors = _validate.ValidateResource(adviserDetailPatchRequest, false);
 
             if (errors != null && errors.Any())
             {
-                _logger.LogError($"{correlationGuid} validation errors with resource");
+                _logger.LogError("{CorrelationGuid} validation errors with resource", correlationGuid);
                 return new UnprocessableEntityObjectResult(errors);
             }
 
-            _logger.LogInformation($"{correlationGuid} Attempting to get Adviser Detail {adviserDetailGuid}");
+            _logger.LogInformation("{CorrelationGuid} Attempting to get Adviser Detail {AdviserDetailId}", correlationGuid, adviserDetailGuid);
             var outcome = await _adviserDetailPatchService.GetAdviserDetailByIdAsync(adviserDetailGuid);
 
             if (outcome == null)
             {
-                _logger.LogError($"{correlationGuid} Adviser Detail does not exist {adviserDetailGuid}");
+                _logger.LogError("{CorrelationGuid} Adviser Detail does not exist {AdviserDetailId}", correlationGuid);
                 return new NoContentResult();
             }
 
@@ -123,14 +123,14 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 
             if (adviserDetailResource == null)
             {
-                _logger.LogError($"{correlationGuid} Adviser Detail does not exist {adviserDetailGuid}");
+                _logger.LogError("{CorrelationGuid} Adviser Detail does not exist {AdviserDetailId}", correlationGuid, adviserDetailGuid);
                 return new NoContentResult();
             }
 
-            _logger.LogInformation($"{correlationGuid} Attempting to update Adviser Detail {adviserDetailGuid}");
+            _logger.LogInformation("{CorrelationGuid} Attempting to update Adviser Detail {AdviserDetailId}", correlationGuid, adviserDetailGuid);
             var updatedAdviserDetail = await _adviserDetailPatchService.UpdateCosmosAsync(adviserDetailResource, adviserDetailGuid);
 
-            _logger.LogInformation($"Exiting {functionName}");
+            _logger.LogInformation("Exiting {functionName}",functionName);
 
             return updatedAdviserDetail == null
                 ? new BadRequestObjectResult(adviserDetailGuid)
