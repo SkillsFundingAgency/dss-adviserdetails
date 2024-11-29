@@ -32,7 +32,7 @@ namespace NCS.DSS.AdviserDetail
                         services.AddSingleton(s =>
                         {
                             var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
-                            var connectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
+                            var connectionString = Environment.GetEnvironmentVariable("AdviserDetailConnectionString");
                             return new CosmosClient(connectionString, options);
                         });
                         services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
