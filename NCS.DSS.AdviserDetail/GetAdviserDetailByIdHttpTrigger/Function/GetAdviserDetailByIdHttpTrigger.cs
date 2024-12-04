@@ -43,7 +43,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
         {
             var functionName = nameof(GetAdviserDetailByIdHttpTrigger);
 
-            _logger.LogInformation("Entered {functionName}",functionName);
+            _logger.LogInformation("Function {FunctionName} has been invoked", functionName);
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
@@ -60,28 +60,32 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _logger.LogWarning("{CorrelationGuid} Unable to locate 'TouchpointId' in request header",correlationId);
+                _logger.LogError("{CorrelationGuid} Unable to locate 'TouchpointId' in request header",correlationId);
                 return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
 
             _logger.LogInformation("{CorrelationGuid} Get AdviserDetail By Id C# HTTP trigger function  processed a request. By Touchpoint: {touchpointId}", correlationId,touchpointId);
 
 
-            if (!Guid.TryParse(adviserDetailId, out var AdviserDetailGuid))
+            if (!Guid.TryParse(adviserDetailId, out var adviserDetailGuid))
             {
-                _logger.LogWarning("{CorrelationGuid} Unable to parse 'adviserDetailId' to a Guid: {adviserDetailId}", correlationId,adviserDetailId);
-                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(AdviserDetailGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                _logger.LogError("{CorrelationGuid} Unable to parse 'adviserDetailId' to a Guid: {adviserDetailId}", correlationId,adviserDetailId);
+                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(adviserDetailGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
             }
 
 
             _logger.LogInformation("{CorrelationGuid} Attempting to get Adviser Detail {AdviserDetailGuid}", correlationId,adviserDetailId);
-            var AdviserDetail = await _AdviserDetailGetService.GetAdviserDetailAsync(AdviserDetailGuid);
+            var AdviserDetail = await _AdviserDetailGetService.GetAdviserDetailAsync(adviserDetailGuid);
 
-            _logger.LogInformation("Exiting {functionName}",functionName);
+            if (AdviserDetail == null)
+            {
+                _logger.LogError("{CorrelationGuid} Adviser Detail does not exist {AdviserDetailId}", correlationGuid, adviserDetailGuid);
+                return new NoContentResult();
+            }
 
-            return AdviserDetail == null ?
-                new NoContentResult() :
-                new JsonResult(AdviserDetail, new JsonSerializerOptions())
+            _logger.LogInformation("Function {FunctionName} has finished invoking", functionName);
+
+            return new JsonResult(AdviserDetail, new JsonSerializerOptions())
                 {
                     StatusCode = (int)HttpStatusCode.OK
                 };

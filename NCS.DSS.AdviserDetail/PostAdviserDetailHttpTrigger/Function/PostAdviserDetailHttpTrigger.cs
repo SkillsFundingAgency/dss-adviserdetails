@@ -47,7 +47,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
         {
             var functionName = nameof(PostAdviserDetailHttpTrigger);
 
-            _logger.LogInformation("Entered {functionName}",functionName);
+            _logger.LogInformation("Function {FunctionName} has been invoked", functionName);
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
@@ -79,7 +79,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
             }
             catch (Newtonsoft.Json.JsonException ex)
             {
-                _logger.LogError("{CorrelationGuid} Unable to retrieve body from req {Exception}", correlationId, ex.Message);
+                _logger.LogError(ex,"{CorrelationGuid} Unable to retrieve body from req {Exception}", correlationId, ex.Message);
                 return new UnprocessableEntityObjectResult(_convertToDynamic.ExcludeProperty(ex, ["TargetSite"]));
             }
 
@@ -105,7 +105,7 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
             _logger.LogInformation("{CorrelationGuid} Attempting to Create Adviser Detail", correlationId);
             var adviserdetail = await _AdviserDetailPostService.CreateAsync(AdviserDetailRequest);
 
-            _logger.LogInformation("Exiting {functionName}", functionName);
+            _logger.LogInformation("Function {FunctionName} has finished invoking", functionName);
 
             return adviserdetail == null
                 ? new BadRequestResult()

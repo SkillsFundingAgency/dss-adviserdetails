@@ -38,8 +38,8 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             _adviserdetail = new Models.AdviserDetail() { AdviserName = "testing" };
             _request = new DefaultHttpContext().Request;
-            _request.Headers.Add(TouchpointIdHeaderParamKey, TouchpointIdHeaderParamValue);
-            _request.Headers.Add(ApimUrlHeaderParameterKey, ApimUrlHeaderParameterValue);
+            _request.Headers.Append(TouchpointIdHeaderParamKey, TouchpointIdHeaderParamValue);
+            _request.Headers.Append(ApimUrlHeaderParameterKey, ApimUrlHeaderParameterValue);
             _validate = new Validate();
             _dynamicHelper = new Mock<IConvertToDynamic>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();

@@ -36,7 +36,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             _adviserDetail = new Models.AdviserDetail();
             _adviserdetailPatch = new AdviserDetailPatch();
-
+            _request = new DefaultHttpContext().Request;
             _validate = new Validate();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _dynamicHelper = new Mock<IConvertToDynamic>();

@@ -49,7 +49,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
         {
             var functionName = nameof(PatchAdviserDetailHttpTrigger);
 
-            _logger.LogInformation("Entered {functionName}", functionName);
+            _logger.LogInformation("Function {FunctionName} has been invoked", functionName);
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
@@ -64,7 +64,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _logger.LogInformation("{CorrelationGuid} Unable to locate 'TouchpointId' in request header.", correlationGuid);
+                _logger.LogError("{CorrelationGuid} Unable to locate 'TouchpointId' in request header.", correlationGuid);
                 return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
 
@@ -75,7 +75,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 
             if (!Guid.TryParse(adviserDetailId, out var adviserDetailGuid))
             {
-                _logger.LogWarning("{CorrelationGuid} Unable to parse 'adviserDetailId' to a Guid: {AdviserDetailId}", correlationGuid, adviserDetailId);
+                _logger.LogError("{CorrelationGuid} Unable to parse 'adviserDetailId' to a Guid: {AdviserDetailId}", correlationGuid, adviserDetailId);
                 return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(adviserDetailGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
             }
 
@@ -88,13 +88,13 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
             }
             catch (Newtonsoft.Json.JsonException ex)
             {
-                _logger.LogError("{CorrelationGuid} Unable to retrieve body from req {Exception}", correlationGuid, ex.Message);
+                _logger.LogError(ex,"{CorrelationGuid} Unable to retrieve body from req {Exception}", correlationGuid, ex.Message);
                 return new UnprocessableEntityObjectResult(_convertToDynamic.ExcludeProperty(ex, ["TargetSite"]));
             }
 
             if (adviserDetailPatchRequest == null)
             {
-                _logger.LogWarning("{CorrelationGuid} Adviser Detail patch request is null", correlationGuid);
+                _logger.LogError("{CorrelationGuid} Adviser Detail patch request is null", correlationGuid);
                 return new UnprocessableEntityObjectResult(req);
             }
 
@@ -130,7 +130,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
             _logger.LogInformation("{CorrelationGuid} Attempting to update Adviser Detail {AdviserDetailId}", correlationGuid, adviserDetailGuid);
             var updatedAdviserDetail = await _adviserDetailPatchService.UpdateCosmosAsync(adviserDetailResource, adviserDetailGuid);
 
-            _logger.LogInformation("Exiting {functionName}",functionName);
+            _logger.LogInformation("Function {FunctionName} has finished invoking", functionName);
 
             return updatedAdviserDetail == null
                 ? new BadRequestObjectResult(adviserDetailGuid)
