@@ -3,6 +3,7 @@ using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -21,8 +22,18 @@ namespace NCS.DSS.AdviserDetail
         {
             var host = new HostBuilder()
                     .ConfigureFunctionsWebApplication()
-                    .ConfigureServices(services =>
+                     .ConfigureAppConfiguration(configBuilder =>
+                     {
+                         configBuilder.SetBasePath(Environment.CurrentDirectory)
+                             .AddJsonFile("local.settings.json", optional: true,
+                                 reloadOnChange: false)
+                             .AddEnvironmentVariables();
+                     })
+                    .ConfigureServices((context,services) =>
                     {
+                        var configuration = context.Configuration;
+                        services.AddOptions<AdviserDetailConfigurationSettings>()
+                            .Bind(configuration);
                         services.AddLogging();
                         services.AddApplicationInsightsTelemetryWorkerService();
                         services.ConfigureFunctionsApplicationInsights();
