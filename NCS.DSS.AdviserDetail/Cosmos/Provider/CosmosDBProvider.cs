@@ -1,6 +1,8 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using NCS.DSS.AdviserDetail.Models;
 using System.Net;
 using System.Text.Json;
 
@@ -9,20 +11,23 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
     public class CosmosDBProvider : ICosmosDBProvider
     {
         private readonly Container _container;
-        private readonly string _databaseId = Environment.GetEnvironmentVariable("DatabaseId");
-        private readonly string _containerId = Environment.GetEnvironmentVariable("CollectionId");
+        private readonly Container _customerContainer;
+
         private readonly ILogger<CosmosDBProvider> _logger;
-        public CosmosDBProvider(CosmosClient cosmosClient, ILogger<CosmosDBProvider> logger)
+        public CosmosDBProvider(CosmosClient cosmosClient, IOptions<AdviserDetailConfigurationSettings> configOptions, ILogger<CosmosDBProvider> logger)
         {
-            _container = cosmosClient.GetContainer(_databaseId, _containerId);
+            var config = configOptions.Value;
+            _container = GetContainer(cosmosClient, config.DatabaseId, config.CollectionId);
+            _customerContainer = GetContainer(cosmosClient, config.CustomerDatabaseId, config.CustomerCollectionId);
             _logger = logger;
         }
-
+        private static Container GetContainer(CosmosClient cosmosClient, string databaseId, string collectionId)
+            => cosmosClient.GetContainer(databaseId, collectionId);
         public async Task<bool> DoesCustomerResourceExist(Guid customerId)
         {
             try
             {
-                var queryCust = _container.GetItemLinqQueryable<Models.Customer>().Where(x => x.CustomerId == customerId).ToFeedIterator();
+                var queryCust = _customerContainer.GetItemLinqQueryable<Customer>().Where(x => x.CustomerId == customerId).ToFeedIterator();
 
                 while (queryCust.HasMoreResults)
                 {
@@ -67,7 +72,6 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
                 _logger.LogError(ce,"Failed to find the Advisor Detail Record in Cosmos DB {AdvisorId}. Exception {Exception}", adviserDetailId, ce.Message);
                 throw;
             }
-
         }
 
         public async Task<string> GetAdviserDetailsByIdToUpdateAsync(Guid adviserDetailId)

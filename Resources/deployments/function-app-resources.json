@@ -92,6 +92,14 @@
               "value": "[parameters('cosmosDbDatabaseId')]"
             },
             {
+              "name": "CustomerCollectionId",
+              "value": "customers"
+            },
+            {
+              "name": "CustomerCollectionId",
+              "value": "customers"
+            },
+            {
               "name": "ServiceBusConnectionString",
               "value": "[parameters('serviceBusConnectionString')]"
             }

@@ -6,6 +6,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NCS.DSS.AdviserDetail.Cosmos.Provider;
 using NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Models;
@@ -31,9 +32,12 @@ namespace NCS.DSS.AdviserDetail
                         services.AddSingleton<ICosmosDBProvider, CosmosDBProvider>();
                         services.AddSingleton(s =>
                         {
-                            var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
-                            var connectionString = Environment.GetEnvironmentVariable("AdviserDetailConnectionString");
-                            return new CosmosClient(connectionString, options);
+                            var settings = s.GetRequiredService<IOptions<AdviserDetailConfigurationSettings>>().Value;
+                            var options = new CosmosClientOptions()
+                            {
+                                ConnectionMode = ConnectionMode.Gateway
+                            };
+                            return new CosmosClient(settings.AdviserDetailConnectionString, options);
                         });
                         services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
                         services.AddScoped<IGetAdviserDetailByIdHttpTriggerService, GetAdviserDetailByIdHttpTriggerService>();
