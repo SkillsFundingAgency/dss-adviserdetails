@@ -1,4 +1,3 @@
-using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
@@ -9,14 +8,10 @@ using NCS.DSS.AdviserDetail.Models;
 using NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service;
 using NCS.DSS.AdviserDetail.Validation;
 using Newtonsoft.Json;
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 {
@@ -24,21 +19,18 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
     {
         private readonly IPatchAdviserDetailHttpTriggerService _adviserDetailPatchService;
         private readonly IValidate _validate;
-        private readonly ILoggerHelper _loggerHelper;
         private readonly IHttpRequestHelper _httpRequestHelper;
-        private readonly ILogger _logger;
+        private readonly ILogger<PatchAdviserDetailHttpTrigger> _logger;
         private readonly IConvertToDynamic _convertToDynamic;
         public PatchAdviserDetailHttpTrigger(
             IPatchAdviserDetailHttpTriggerService adviserDetailPatchService,
             IValidate validate,
-            ILoggerHelper loggerHelper,
             IHttpRequestHelper httpRequestHelper,
             ILogger<PatchAdviserDetailHttpTrigger> logger,
             IConvertToDynamic convertToDynamic)
         {
             _adviserDetailPatchService = adviserDetailPatchService;
             _validate = validate;
-            _loggerHelper = loggerHelper;
             _httpRequestHelper = httpRequestHelper;
             _logger = logger;
             _convertToDynamic = convertToDynamic;
@@ -55,7 +47,9 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
         [Display(Name = "Patch", Description = "Ability to modify/update an Adviser Detail record.")]
         public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "AdviserDetails/{adviserDetailId}")] HttpRequest req, string adviserDetailId)
         {
-            _loggerHelper.LogMethodEnter(_logger);
+            var functionName = nameof(PatchAdviserDetailHttpTrigger);
+
+            _logger.LogInformation("Function {FunctionName} has been invoked", functionName);
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
@@ -70,18 +64,18 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _logger.LogInformation("Unable to locate 'APIM-TouchpointId' in request header.");
+                _logger.LogError("{CorrelationGuid} Unable to locate 'TouchpointId' in request header.", correlationGuid);
                 return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
-                _loggerHelper.LogInformationMessage(_logger, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
+                _logger.LogWarning("{CorrelationGuid} Unable to locate 'SubcontractorId' in request header", correlationGuid);
 
 
             if (!Guid.TryParse(adviserDetailId, out var adviserDetailGuid))
             {
-                _loggerHelper.LogInformationMessage(_logger, correlationGuid, string.Format("Unable to parse 'adviserDetailId' to a Guid: {0}", adviserDetailId));
+                _logger.LogError("{CorrelationGuid} Unable to parse 'adviserDetailId' to a Guid: {AdviserDetailId}", correlationGuid, adviserDetailId);
                 return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(adviserDetailGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
             }
 
@@ -89,39 +83,39 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 
             try
             {
-                _loggerHelper.LogInformationMessage(_logger, correlationGuid, "Attempt to get resource from body of the request");
+                _logger.LogInformation("{CorrelationGuid} Attempt to get resource from body of the request", correlationGuid);
                 adviserDetailPatchRequest = await _httpRequestHelper.GetResourceFromRequest<Models.AdviserDetailPatch>(req);
             }
             catch (Newtonsoft.Json.JsonException ex)
             {
-                _loggerHelper.LogError(_logger, correlationGuid, "Unable to retrieve body from req", ex);
+                _logger.LogError(ex,"{CorrelationGuid} Unable to retrieve body from req {Exception}", correlationGuid, ex.Message);
                 return new UnprocessableEntityObjectResult(_convertToDynamic.ExcludeProperty(ex, ["TargetSite"]));
             }
 
             if (adviserDetailPatchRequest == null)
             {
-                _loggerHelper.LogInformationMessage(_logger, correlationGuid, "Adviser Detail patch request is null");
+                _logger.LogError("{CorrelationGuid} Adviser Detail patch request is null", correlationGuid);
                 return new UnprocessableEntityObjectResult(req);
             }
 
-            _loggerHelper.LogInformationMessage(_logger, correlationGuid, "Attempt to set id's for Adviser Detail patch");
+            _logger.LogInformation("{CorrelationGuid} Attempt to set id's for Adviser Detail patch", correlationGuid);
             adviserDetailPatchRequest.SetIds(touchpointId, subcontractorId);
 
-            _loggerHelper.LogInformationMessage(_logger, correlationGuid, "Attempt to validate resource");
+            _logger.LogInformation("{CorrelationGuid} Attempt to validate resource", correlationGuid);
             var errors = _validate.ValidateResource(adviserDetailPatchRequest, false);
 
             if (errors != null && errors.Any())
             {
-                _loggerHelper.LogInformationMessage(_logger, correlationGuid, "validation errors with resource");
+                _logger.LogError("{CorrelationGuid} validation errors with resource", correlationGuid);
                 return new UnprocessableEntityObjectResult(errors);
             }
 
-            _loggerHelper.LogInformationMessage(_logger, correlationGuid, string.Format("Attempting to get Adviser Detail {0}", adviserDetailGuid));
+            _logger.LogInformation("{CorrelationGuid} Attempting to get Adviser Detail {AdviserDetailId}", correlationGuid, adviserDetailGuid);
             var outcome = await _adviserDetailPatchService.GetAdviserDetailByIdAsync(adviserDetailGuid);
 
             if (outcome == null)
             {
-                _loggerHelper.LogInformationMessage(_logger, correlationGuid, string.Format("Adviser Detail does not exist {0}", adviserDetailGuid));
+                _logger.LogError("{CorrelationGuid} Adviser Detail does not exist {AdviserDetailId}", correlationGuid);
                 return new NoContentResult();
             }
 
@@ -129,14 +123,14 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 
             if (adviserDetailResource == null)
             {
-                _loggerHelper.LogInformationMessage(_logger, correlationGuid, string.Format("Adviser Detail does not exist {0}", adviserDetailGuid));
+                _logger.LogError("{CorrelationGuid} Adviser Detail does not exist {AdviserDetailId}", correlationGuid, adviserDetailGuid);
                 return new NoContentResult();
             }
 
-            _loggerHelper.LogInformationMessage(_logger, correlationGuid, string.Format("Attempting to update Adviser Detail {0}", adviserDetailGuid));
+            _logger.LogInformation("{CorrelationGuid} Attempting to update Adviser Detail {AdviserDetailId}", correlationGuid, adviserDetailGuid);
             var updatedAdviserDetail = await _adviserDetailPatchService.UpdateCosmosAsync(adviserDetailResource, adviserDetailGuid);
 
-            _loggerHelper.LogMethodExit(_logger);
+            _logger.LogInformation("Function {FunctionName} has finished invoking", functionName);
 
             return updatedAdviserDetail == null
                 ? new BadRequestObjectResult(adviserDetailGuid)
