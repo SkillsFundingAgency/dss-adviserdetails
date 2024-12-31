@@ -1,0 +1,119 @@
+[1mdiff --git a/Resources/deployments/function-app-resources.json b/Resources/deployments/function-app-resources.json[m
+[1mindex 1dd084c..d08b79c 100644[m
+[1m--- a/Resources/deployments/function-app-resources.json[m
+[1m+++ b/Resources/deployments/function-app-resources.json[m
+[36m@@ -1,13 +1,10 @@[m
+ {[m
+[31m-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",[m
+[32m+[m[32m  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",[m
+   "contentVersion": "1.0.0.0",[m
+   "parameters": {[m
+     "appInsightsInstrumentationKey": {[m
+       "type": "string"[m
+     },[m
+[31m-    "appServicePlanId": {[m
+[31m-      "type": "string"[m
+[31m-    },[m
+     "configEnvironmentName": {[m
+       "type": "string"[m
+     },[m
+[36m@@ -35,77 +32,31 @@[m
+     "storageAccountKey": {[m
+       "type": "string"[m
+     }[m
+[31m-  },[m
+[31m-  "variables": {[m
+[31m-    "FunctionAppInsightInstrumentationKey":"[parameters('appInsightsInstrumentationKey')]",[m
+[31m-    "storageAccountConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=', parameters('storageAccountKey'), ';EndpointSuffix=core.windows.net')]"[m
+[31m-  },[m
+[31m-  "resources": [[m
+[32m+[m[32m  },  "resources": [[m
+     {[m
+[31m-      "name": "[parameters('functionAppName')]",[m
+[31m-      "type": "Microsoft.Web/sites",[m
+[31m-      "apiVersion": "2016-08-01",[m
+[31m-      "location": "[resourceGroup().location]",[m
+[31m-      "kind": "functionapp",[m
+[32m+[m[32m      "type": "Microsoft.Web/sites/config",[m
+[32m+[m[32m      "apiVersion": "2023-12-01",[m
+[32m+[m[32m      "name": "[format('{0}/{1}', parameters('functionAppName'), 'appsettings')]",[m
+       "properties": {[m
+[31m-        "httpsOnly": true,[m
+[31m-        "serverFarmId": "[parameters('appServicePlanId')]",[m
+[31m-        "siteConfig": {[m
+[31m-          "alwaysOn": true,[m
+[31m-          "mintlsVersion": "1.2",[m
+[31m-          "netFrameworkVersion": "v8.0",[m
+[31m-          "appSettings": [[m
+[31m-            {[m
+[31m-              "name": "EnvironmentName",[m
+[31m-              "value": "[toUpper(parameters('configEnvironmentName'))]"[m
+[31m-            },[m
+[31m-            {[m
+[31m-              "name": "FUNCTIONS_WORKER_RUNTIME",[m
+[31m-              "value": "dotnet-isolated"[m
+[31m-            },[m
+[31m-            {[m
+[31m-              "name": "FUNCTIONS_EXTENSION_VERSION",[m
+[31m-              "value": "~4"[m
+[31m-            },[m
+[31m-            {[m
+[31m-              "name": "MSDEPLOY_RENAME_LOCKED_FILES",[m
+[31m-              "value": "1"[m
+[31m-            },[m
+[31m-            {[m
+[31m-              "name": "AzureWebJobsStorage",[m
+[31m-              "value": "[variables('storageAccountConnectionString')]"[m
+[31m-            },[m
+[31m-            {[m
+[31m-              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",[m
+[31m-              "value": "[variables('FunctionAppInsightInstrumentationKey')]"[m
+[31m-            },[m
+[31m-            {[m
+[31m-              "name": "AdviserDetailConnectionString",[m
+[31m-              "value": "[concat('AccountEndpoint=', parameters('cosmosDbEndpoint'), '/;AccountKey=', parameters('cosmosDbKey'), ';')]"[m
+[31m-            },[m
+[31m-            {[m
+[31m-              "name": "CollectionId",[m
+[31m-              "value": "[parameters('cosmosDbCollectionId')]"[m
+[31m-            },[m
+[31m-            {[m
+[31m-              "name": "DatabaseId",[m
+[31m-              "value": "[parameters('cosmosDbDatabaseId')]"[m
+[31m-            },[m
+[31m-            {[m
+[31m-              "name": "CustomerCollectionId",[m
+[31m-              "value": "customers"[m
+[31m-            },[m
+[31m-            {[m
+[31m-              "name": "CustomerDatabaseId",[m
+[31m-              "value": "customers"[m
+[31m-            },[m
+[31m-            {[m
+[31m-              "name": "ServiceBusConnectionString",[m
+[31m-              "value": "[parameters('serviceBusConnectionString')]"[m
+[31m-            }[m
+[31m-          ][m
+[31m-        }[m
+[32m+[m[32m        "EnvironmentName": "[toUpper(parameters('configEnvironmentName'))]",[m
+[32m+[m[32m        "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",[m
+[32m+[m[32m        "FUNCTIONS_EXTENSION_VERSION": "~4",[m
+[32m+[m[32m        "MSDEPLOY_RENAME_LOCKED_FILES": "1",[m
+[32m+[m[32m        "AzureWebJobsStorage": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix=core.windows.net', parameters('storageAccountName'), parameters('storageAccountKey'))]",[m
+[32m+[m[32m        "APPINSIGHTS_INSTRUMENTATIONKEY":  "[parameters('appInsightsInstrumentationKey')]",[m
+[32m+[m[32m        "AdviserDetailConnectionString": "[format('AccountEndpoint={0}/;AccountKey={1};', parameters('cosmosDbEndpoint'), parameters('cosmosDbKey'))]",[m
+[32m+[m[32m        "CollectionId": "[parameters('cosmosDbCollectionId')]",[m
+[32m+[m[32m        "DatabaseId": "[parameters('cosmosDbDatabaseId')]",[m
+[32m+[m[32m        "CustomerCollectionId": "customers",[m
+[32m+[m[32m        "CustomerDatabaseId": "customers",[m
+[32m+[m[32m        "ServiceBusConnectionString": "[parameters('serviceBusConnectionString')]"[m
+       }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    {[m
+[32m+[m[32m      "type": "Microsoft.Web/sites/config",[m
+[32m+[m[32m      "apiVersion": "2023-12-01",[m
+[32m+[m[32m      "name": "[format('{0}/{1}', parameters('functionAppName'), 'connectionstrings')]",[m
+[32m+[m[32m      "properties": {}[m
+     }[m
+   ],[m
+   "outputs": {}[m
