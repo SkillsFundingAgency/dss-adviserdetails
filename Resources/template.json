@@ -32,12 +32,6 @@
         "comments": "Notifications are not sent for AdviserDetails so the serviceBusQueueName parameter is not consumed in this template.  The parameter exists to maintain compatibility with the  dss-functionapp-release-vx task group."
       }
     },
-    "sharedAppServicePlanName": {
-      "type": "string"
-    },
-    "sharedAppServicePlanResourceGroup": {
-      "type": "string"
-    },
     "storageAccountName": {
       "type": "string"
     },
@@ -49,8 +43,7 @@
     }
   },
     "variables": {
-        "functionAppTemplateUri": "[concat(parameters('templateBaseUrl'), '/deployments/function-app-resources.json')]",
-        "sharedAppServicePlanId": "[resourceId(parameters('sharedAppServicePlanResourceGroup'), 'Microsoft.Web/serverfarms', parameters('sharedAppServicePlanName'))]"
+        "functionAppTemplateUri": "[concat(parameters('templateBaseUrl'), '/deployments/function-app-resources.json')]"
     },
     "resources": [
         {
@@ -69,9 +62,6 @@
                 },
                 "functionAppName": {
                   "value": "[parameters('functionAppNames')[copyIndex()]]"
-                },
-                "appServicePlanId": {
-                  "value": "[variables('sharedAppServicePlanId')]"
                 },
                 "configEnvironmentName": {
                   "value": "[parameters('environmentName')]"
