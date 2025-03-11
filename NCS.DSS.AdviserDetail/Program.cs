@@ -1,3 +1,4 @@
+using Azure.Identity;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
@@ -43,12 +44,14 @@ namespace NCS.DSS.AdviserDetail
                         services.AddSingleton<ICosmosDBProvider, CosmosDBProvider>();
                         services.AddSingleton(s =>
                         {
-                            var settings = s.GetRequiredService<IOptions<AdviserDetailConfigurationSettings>>().Value;
-                            var options = new CosmosClientOptions()
+                            var cosmosDbEndpoint = configuration["CosmosDbEndpoint"];
+                            if (string.IsNullOrEmpty(cosmosDbEndpoint))
                             {
-                                ConnectionMode = ConnectionMode.Gateway
-                            };
-                            return new CosmosClient(settings.AdviserDetailConnectionString, options);
+                                throw new InvalidOperationException("CosmosDbEndpoint is not configured.");
+                            }
+
+                            var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
+                            return new CosmosClient(cosmosDbEndpoint, new DefaultAzureCredential(), options);
                         });
                         services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
                         services.AddScoped<IGetAdviserDetailByIdHttpTriggerService, GetAdviserDetailByIdHttpTriggerService>();

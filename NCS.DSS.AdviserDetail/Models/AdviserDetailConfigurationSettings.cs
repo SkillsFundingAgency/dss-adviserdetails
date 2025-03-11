@@ -2,6 +2,7 @@
 {
     public class AdviserDetailConfigurationSettings
     {
+        public required string CosmosDbEndpoint { get; set; }
         public required string AdviserDetailConnectionString { get; set; }
         public required string QueueName { get; set; }
         public required string ServiceBusConnectionString { get; set; }
