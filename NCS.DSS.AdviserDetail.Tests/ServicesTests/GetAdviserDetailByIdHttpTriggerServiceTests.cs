@@ -11,14 +11,14 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
     public class GetAdviserDetailByIdHttpTriggerServiceTests
     {
         private IGetAdviserDetailByIdHttpTriggerService _adviserdetailHttpTriggerService;
-        private Mock<IDocumentDBProvider> _documentDbProvider;
+        private Mock<ICosmosDBProvider> _documentDbProvider;
         private Models.AdviserDetail _adviserdetail;
         private readonly Guid _adviserdetailId = Guid.Parse("7E467BDB-213F-407A-B86A-1954053D3C24");
 
         [SetUp]
         public void Setup()
         {
-            _documentDbProvider = new Mock<IDocumentDBProvider>();
+            _documentDbProvider = new Mock<ICosmosDBProvider>();
             _adviserdetailHttpTriggerService = new GetAdviserDetailByIdHttpTriggerService(_documentDbProvider.Object);
             _adviserdetail = new Models.AdviserDetail();
         }
