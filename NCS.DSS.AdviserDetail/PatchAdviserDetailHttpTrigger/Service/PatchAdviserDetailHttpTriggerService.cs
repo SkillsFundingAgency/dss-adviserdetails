@@ -9,9 +9,9 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Service
     public class PatchAdviserDetailHttpTriggerService : IPatchAdviserDetailHttpTriggerService
     {
         private readonly IAdviserDetailPatchService _adviserdetailPatchService;
-        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly ICosmosDBProvider _documentDbProvider;
 
-        public PatchAdviserDetailHttpTriggerService(IDocumentDBProvider documentDbProvider, IAdviserDetailPatchService adviserdetailPatchService)
+        public PatchAdviserDetailHttpTriggerService(ICosmosDBProvider documentDbProvider, IAdviserDetailPatchService adviserdetailPatchService)
         {
             _documentDbProvider = documentDbProvider;
             _adviserdetailPatchService = adviserdetailPatchService;

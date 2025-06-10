@@ -6,9 +6,9 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Service
 {
     public class PostAdviserDetailHttpTriggerService : IPostAdviserDetailHttpTriggerService
     {
-        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly ICosmosDBProvider _documentDbProvider;
 
-        public PostAdviserDetailHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        public PostAdviserDetailHttpTriggerService(ICosmosDBProvider documentDbProvider)
         {
             _documentDbProvider = documentDbProvider;
         }

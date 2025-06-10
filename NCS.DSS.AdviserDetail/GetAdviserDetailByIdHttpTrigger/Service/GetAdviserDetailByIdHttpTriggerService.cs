@@ -6,9 +6,9 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Service
 {
     public class GetAdviserDetailByIdHttpTriggerService : IGetAdviserDetailByIdHttpTriggerService
     {
-        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly ICosmosDBProvider _documentDbProvider;
 
-        public GetAdviserDetailByIdHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        public GetAdviserDetailByIdHttpTriggerService(ICosmosDBProvider documentDbProvider)
         {
             _documentDbProvider = documentDbProvider;
         }

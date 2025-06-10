@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Documents;
+﻿using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Moq;
 using NCS.DSS.AdviserDetail.Cosmos.Provider;
@@ -20,7 +21,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
     {
         private IPatchAdviserDetailHttpTriggerService _adviserdetailPatchHttpTriggerService;
         private Mock<IAdviserDetailPatchService> _adviserdetailPatchService;
-        private Mock<IDocumentDBProvider> _documentDbProvider;
+        private Mock<ICosmosDBProvider> _documentDbProvider;
         private Models.AdviserDetail _adviserDetail;
         private AdviserDetailPatch _adviserDetailPatch;
         private string _json;
@@ -33,7 +34,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         [SetUp]
         public void Setup()
         {
-            _documentDbProvider = new Mock<IDocumentDBProvider>();
+            _documentDbProvider = new Mock<ICosmosDBProvider>();
             _adviserdetailPatchService = new Mock<IAdviserDetailPatchService>();
             _adviserdetailPatchHttpTriggerService = new PatchAdviserDetailHttpTriggerService(_documentDbProvider.Object, _adviserdetailPatchService.Object);
             _adviserDetail = new Models.AdviserDetail();
@@ -80,7 +81,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         public async Task PatchAdviserDetailsHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenResourceCannotBeUpdated()
         {
             // Arrange
-            _documentDbProvider.Setup(x => x.UpdateAdviserDetailAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult<ResourceResponse<Document>>(null));
+            _documentDbProvider.Setup(x => x.UpdateAdviserDetailAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult<ItemResponse<Models.AdviserDetail>>(null));
 
             // Act
             var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);
@@ -93,7 +94,7 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         public async Task PatchAdviserDetailsHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenResourceCannotBeFound()
         {
             // Arrange
-            _documentDbProvider.Setup(x => x.CreateAdviserDetailAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult(new ResourceResponse<Document>(null)));
+            _documentDbProvider.Setup(x => x.CreateAdviserDetailAsync(It.IsAny<Models.AdviserDetail>())).Returns(Task.FromResult<ItemResponse<Models.AdviserDetail>>(null));
 
             // Act
             var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);
@@ -105,30 +106,11 @@ namespace NCS.DSS.AdviserDetail.Tests.ServicesTests
         [Test]
         public async Task PatchAdviserDetailsHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsResourceWhenUpdated()
         {
-            // Arrange
-            const string documentServiceResponseClass = "Microsoft.Azure.Documents.DocumentServiceResponse, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
-            const string dictionaryNameValueCollectionClass = "Microsoft.Azure.Documents.Collections.DictionaryNameValueCollection, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
-
-            var resourceResponse = new ResourceResponse<Document>(new Document());
-            var documentServiceResponseType = Type.GetType(documentServiceResponseClass);
-
-            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
-
-            var headers = new NameValueCollection { { "x-ms-request-charge", "0" } };
-
-            var headersDictionaryType = Type.GetType(dictionaryNameValueCollectionClass);
-
-            var headersDictionaryInstance = Activator.CreateInstance(headersDictionaryType, headers);
-
-            var arguments = new[] { Stream.Null, headersDictionaryInstance, HttpStatusCode.OK, null };
-
-            var documentServiceResponse = documentServiceResponseType.GetTypeInfo().GetConstructors(flags)[0].Invoke(arguments);
-
-            var responseField = typeof(ResourceResponse<Document>).GetTypeInfo().GetField("response", flags);
-
-            responseField?.SetValue(resourceResponse, documentServiceResponse);
-
-            _documentDbProvider.Setup(x => x.UpdateAdviserDetailAsync(_adviserDetailString, _adviserDetailId)).Returns(Task.FromResult(resourceResponse));
+            //Arrange
+            var resourceResponse = new Mock<ItemResponse<Models.AdviserDetail>>();
+            resourceResponse.Setup(x => x.Resource).Returns(_adviserDetail);
+            resourceResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.OK);
+            _documentDbProvider.Setup(x => x.UpdateAdviserDetailAsync(_adviserDetailString, _adviserDetailId)).Returns(Task.FromResult(resourceResponse.Object));
 
             // Act
             var result = await _adviserdetailPatchHttpTriggerService.UpdateCosmosAsync(_adviserDetailString, _adviserDetailId);

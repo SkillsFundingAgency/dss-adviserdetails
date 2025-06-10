@@ -1,5 +1,4 @@
-﻿using DFC.Common.Standard.Logging;
-using DFC.HTTP.Standard;
+﻿using DFC.HTTP.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -28,7 +27,6 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         private string TouchpointIdHeaderParamValue = "9000000000";
         private HttpRequest _request;
         private IValidate _validate;
-        private Mock<ILoggerHelper> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Mock<IPostAdviserDetailHttpTriggerService> _postAdviserDetailHttpTriggerService;
         private Models.AdviserDetail _adviserdetail;
@@ -40,18 +38,16 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
         {
             _adviserdetail = new Models.AdviserDetail() { AdviserName = "testing" };
             _request = new DefaultHttpContext().Request;
-            _request.Headers.Add(TouchpointIdHeaderParamKey, TouchpointIdHeaderParamValue);
-            _request.Headers.Add(ApimUrlHeaderParameterKey, ApimUrlHeaderParameterValue);
+            _request.Headers.Append(TouchpointIdHeaderParamKey, TouchpointIdHeaderParamValue);
+            _request.Headers.Append(ApimUrlHeaderParameterKey, ApimUrlHeaderParameterValue);
             _validate = new Validate();
             _dynamicHelper = new Mock<IConvertToDynamic>();
-            _loggerHelper = new Mock<ILoggerHelper>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _postAdviserDetailHttpTriggerService = new Mock<IPostAdviserDetailHttpTriggerService>();
             _logger = new Mock<ILogger<AdviserDetailFunction.PostAdviserDetailHttpTrigger>>();
             _function = new AdviserDetailFunction.PostAdviserDetailHttpTrigger(
                 _postAdviserDetailHttpTriggerService.Object,
                 _validate,
-                _loggerHelper.Object,
                 _httpRequestHelper.Object,
                 _logger.Object,
                 _dynamicHelper.Object);
@@ -85,7 +81,6 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
             _function = new AdviserDetailFunction.PostAdviserDetailHttpTrigger(
                 _postAdviserDetailHttpTriggerService.Object,
                 validate.Object,
-                _loggerHelper.Object,
                 _httpRequestHelper.Object,
                 _logger.Object,
                 _dynamicHelper.Object);
@@ -153,8 +148,7 @@ namespace NCS.DSS.AdviserDetail.Tests.FunctionTests
 
         private async Task<IActionResult> RunFunction(string adviserdetailId)
         {
-            return await _function.RunAsync(
-                _request);
+            return await _function.RunAsync(_request);
         }
     }
 }
