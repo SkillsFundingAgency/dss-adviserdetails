@@ -34,7 +34,7 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
                     var response = await queryCust.ReadNextAsync();
                     if (response != null)
                     {
-                        _logger.LogInformation("Customer Record found in Cosmos DB for {CustomerID}", customerId);
+                        _logger.LogTrace("Customer Record found in Cosmos DB for {CustomerID}", customerId);
                         return true;
                     }
                 }
@@ -60,7 +60,7 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
                     var response = await queryCust.ReadNextAsync();
                     if (response != null)
                     {
-                        _logger.LogInformation("Advisor Detail Record found in Cosmos DB for {AdviserDetailId}", adviserDetailId);
+                        _logger.LogTrace("Advisor Detail Record found in Cosmos DB for {AdviserDetailId}", adviserDetailId);
                         return response.Resource.FirstOrDefault();
                     }                    
                 }
@@ -86,7 +86,7 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
                     if (response != null)
                     {
                         var jsonString = JsonSerializer.Serialize(response.Resource.FirstOrDefault());
-                        _logger.LogInformation("Advisor Detail found in Cosmos DB for {AdviserDetailId}", adviserDetailId);
+                        _logger.LogTrace("Advisor Detail found in Cosmos DB for {AdviserDetailId}", adviserDetailId);
                         return jsonString;
                     }
                 }
@@ -108,7 +108,7 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
                 var response = await _container.CreateItemAsync(adviserDetail, null);
                 if (response.StatusCode == HttpStatusCode.Created)
                 {
-                    _logger.LogInformation("Advisor Detail Record Created in Cosmos DB for {AdviserDetailId}", adviserDetail.AdviserDetailId);
+                    _logger.LogTrace("Advisor Detail Record Created in Cosmos DB for {AdviserDetailId}", adviserDetail.AdviserDetailId);
                 }
                 else
                 {
@@ -131,7 +131,7 @@ namespace NCS.DSS.AdviserDetail.Cosmos.Provider
                 var response = await _container.ReplaceItemAsync(advisor, adviserDetailId.ToString());
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    _logger.LogInformation("Advisor Detail Record Updated in Cosmos DB for {AdviserDetailId}", advisor.AdviserDetailId);
+                    _logger.LogTrace("Advisor Detail Record Updated in Cosmos DB for {AdviserDetailId}", advisor.AdviserDetailId);
                 }
                 else
                 {

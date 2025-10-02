@@ -47,11 +47,9 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
         {
             var functionName = nameof(PostAdviserDetailHttpTrigger);
 
-            _logger.LogInformation("Function {FunctionName} has been invoked", functionName);
+            _logger.LogTrace("Function {FunctionName} has been invoked", functionName);
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
-            if (string.IsNullOrEmpty(correlationId))
-                _logger.LogInformation("Unable to locate 'DssCorrelationId' in request header");
 
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
@@ -68,13 +66,13 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
-                _logger.LogWarning("{CorrelationGuid} Unable to locate 'SubcontractorId' in request header", correlationId);
+                _logger.LogInformation("{CorrelationGuid} Unable to locate 'SubcontractorId' in request header", correlationId);
 
             Models.AdviserDetail AdviserDetailRequest;
 
             try
             {
-                _logger.LogInformation("{CorrelationGuid} Attempt to get resource from body of the request", correlationId);
+                _logger.LogTrace("{CorrelationGuid} Attempt to get resource from body of the request", correlationId);
                 AdviserDetailRequest = await _httpRequestHelper.GetResourceFromRequest<Models.AdviserDetail>(req);
             }
             catch (Newtonsoft.Json.JsonException ex)
@@ -89,11 +87,11 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
                 return new UnprocessableEntityResult();
             }
 
-            _logger.LogInformation("{CorrelationGuid} Attempt to set id's for Adviser Detail", correlationId);
+            _logger.LogTrace("{CorrelationGuid} Attempt to set id's for Adviser Detail", correlationId);
             AdviserDetailRequest.SetIds(touchpointId, subcontractorId);
 
 
-            _logger.LogInformation("{CorrelationGuid} Attempt to validate resource", correlationId);
+            _logger.LogTrace("{CorrelationGuid} Attempt to validate resource", correlationId);
             var errors = _validate.ValidateResource(AdviserDetailRequest, true);
 
             if (errors != null && errors.Any())
@@ -102,10 +100,10 @@ namespace NCS.DSS.AdviserDetail.PostAdviserDetailHttpTrigger.Function
                 return new UnprocessableEntityObjectResult(errors);
             }
 
-            _logger.LogInformation("{CorrelationGuid} Attempting to Create Adviser Detail", correlationId);
+            _logger.LogTrace("{CorrelationGuid} Attempting to Create Adviser Detail", correlationId);
             var adviserdetail = await _AdviserDetailPostService.CreateAsync(AdviserDetailRequest);
 
-            _logger.LogInformation("Function {FunctionName} has finished invoking", functionName);
+            _logger.LogTrace("Function {FunctionName} has finished invoking", functionName);
 
             return adviserdetail == null
                 ? new BadRequestResult()
