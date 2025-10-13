@@ -20,9 +20,6 @@
     "functionAppNames": {
       "type": "array"
     },
-    "serviceBusConnectionString": {
-      "type": "string"
-    },
     "serviceBusQueueName": {
       "type": "string",
       "metadata": {
@@ -30,10 +27,17 @@
       }
     },
     "storageAccountName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "comments": "This parameter is not consumed in this template.  The parameter exists to maintain compatibility with the  dss-functionapp-release-vx task group."
+      }
     },
     "storageAccountKey": {
-      "type": "string"
+      "type": "string",
+        "metadata": {
+        "comments": "This parameter is not consumed in this template.  The parameter exists to maintain compatibility with the  dss-functionapp-release-vx task group."
+      }
+
     },
     "templateBaseUrl": {
       "type": "string"
@@ -58,7 +62,7 @@
         "DatabaseId": "[parameters('cosmosDbDatabaseId')]",
         "CustomerCollectionId": "customers",
         "CustomerDatabaseId": "customers",
-        "ServiceBusConnectionString": "[parameters('serviceBusConnectionString')]",
+        "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
         "CosmosDbEndpoint": "[parameters('CosmosDbEndpoint')]"
       },
       "copy": {
