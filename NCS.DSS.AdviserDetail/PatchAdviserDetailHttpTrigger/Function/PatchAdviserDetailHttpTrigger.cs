@@ -49,11 +49,9 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
         {
             var functionName = nameof(PatchAdviserDetailHttpTrigger);
 
-            _logger.LogInformation("Function {FunctionName} has been invoked", functionName);
+            _logger.LogTrace("Function {FunctionName} has been invoked", functionName);
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
-            if (string.IsNullOrEmpty(correlationId))
-                _logger.LogInformation("Unable to locate 'DssCorrelationId' in request header");
 
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
@@ -70,7 +68,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
-                _logger.LogWarning("{CorrelationGuid} Unable to locate 'SubcontractorId' in request header", correlationGuid);
+                _logger.LogInformation("{CorrelationGuid} Unable to locate 'SubcontractorId' in request header", correlationGuid);
 
 
             if (!Guid.TryParse(adviserDetailId, out var adviserDetailGuid))
@@ -83,7 +81,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
 
             try
             {
-                _logger.LogInformation("{CorrelationGuid} Attempt to get resource from body of the request", correlationGuid);
+                _logger.LogTrace("{CorrelationGuid} Attempt to get resource from body of the request", correlationGuid);
                 adviserDetailPatchRequest = await _httpRequestHelper.GetResourceFromRequest<Models.AdviserDetailPatch>(req);
             }
             catch (Newtonsoft.Json.JsonException ex)
@@ -98,10 +96,10 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
                 return new UnprocessableEntityObjectResult(req);
             }
 
-            _logger.LogInformation("{CorrelationGuid} Attempt to set id's for Adviser Detail patch", correlationGuid);
+            _logger.LogTrace("{CorrelationGuid} Attempt to set id's for Adviser Detail patch", correlationGuid);
             adviserDetailPatchRequest.SetIds(touchpointId, subcontractorId);
 
-            _logger.LogInformation("{CorrelationGuid} Attempt to validate resource", correlationGuid);
+            _logger.LogTrace("{CorrelationGuid} Attempt to validate resource", correlationGuid);
             var errors = _validate.ValidateResource(adviserDetailPatchRequest, false);
 
             if (errors != null && errors.Any())
@@ -110,7 +108,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
                 return new UnprocessableEntityObjectResult(errors);
             }
 
-            _logger.LogInformation("{CorrelationGuid} Attempting to get Adviser Detail {AdviserDetailId}", correlationGuid, adviserDetailGuid);
+            _logger.LogTrace("{CorrelationGuid} Attempting to get Adviser Detail {AdviserDetailId}", correlationGuid, adviserDetailGuid);
             var outcome = await _adviserDetailPatchService.GetAdviserDetailByIdAsync(adviserDetailGuid);
 
             if (outcome == null)
@@ -127,10 +125,10 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
                 return new NoContentResult();
             }
 
-            _logger.LogInformation("{CorrelationGuid} Attempting to update Adviser Detail {AdviserDetailId}", correlationGuid, adviserDetailGuid);
+            _logger.LogTrace("{CorrelationGuid} Attempting to update Adviser Detail {AdviserDetailId}", correlationGuid, adviserDetailGuid);
             var updatedAdviserDetail = await _adviserDetailPatchService.UpdateCosmosAsync(adviserDetailResource, adviserDetailGuid);
 
-            _logger.LogInformation("Function {FunctionName} has finished invoking", functionName);
+            _logger.LogTrace("Function {FunctionName} has finished invoking", functionName);
 
             return updatedAdviserDetail == null
                 ? new BadRequestObjectResult(adviserDetailGuid)

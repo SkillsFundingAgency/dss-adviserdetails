@@ -14,17 +14,11 @@
     "CosmosDbEndpoint": {
       "type": "string"
     },
-    "cosmosDbKey": {
-      "type": "string"
-    },
     "environmentName": {
       "type": "string"
     },
     "functionAppNames": {
       "type": "array"
-    },
-    "serviceBusConnectionString": {
-      "type": "string"
     },
     "serviceBusQueueName": {
       "type": "string",
@@ -33,10 +27,17 @@
       }
     },
     "storageAccountName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "comments": "This parameter is not consumed in this template.  The parameter exists to maintain compatibility with the  dss-functionapp-release-vx task group."
+      }
     },
     "storageAccountKey": {
-      "type": "string"
+      "type": "string",
+        "metadata": {
+        "comments": "This parameter is not consumed in this template.  The parameter exists to maintain compatibility with the  dss-functionapp-release-vx task group."
+      }
+
     },
     "templateBaseUrl": {
       "type": "string"
@@ -57,12 +58,11 @@
         "MSDEPLOY_RENAME_LOCKED_FILES": "1",
         "AzureWebJobStorage": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=SharedStorageAccountConnectionString)', parameters('keyVaultName'))]",
         "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightsInstrumentationKey')]",
-        "AdviserDetailConnectionString": "[format('AccountEndpoint={0}/;AccountKey={1};', parameters('CosmosDbEndpoint'), parameters('cosmosDbKey'))]",
         "CollectionId": "[parameters('cosmosDbCollectionId')]",
         "DatabaseId": "[parameters('cosmosDbDatabaseId')]",
         "CustomerCollectionId": "customers",
         "CustomerDatabaseId": "customers",
-        "ServiceBusConnectionString": "[parameters('serviceBusConnectionString')]",
+        "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
         "CosmosDbEndpoint": "[parameters('CosmosDbEndpoint')]"
       },
       "copy": {

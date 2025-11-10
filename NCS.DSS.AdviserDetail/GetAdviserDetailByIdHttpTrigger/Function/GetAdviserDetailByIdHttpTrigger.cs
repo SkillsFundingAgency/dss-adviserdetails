@@ -43,17 +43,13 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
         {
             var functionName = nameof(GetAdviserDetailByIdHttpTrigger);
 
-            _logger.LogInformation("Function {FunctionName} has been invoked", functionName);
+            _logger.LogTrace("Function {FunctionName} has been invoked", functionName);
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
-            if (string.IsNullOrEmpty(correlationId))
-            {
-                _logger.LogWarning("Unable to locate 'DssCorrelationId' in request header");
-            }
 
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
-                _logger.LogWarning("Unable to parse 'DssCorrelationId' to a Guid");
+                _logger.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
                 correlationGuid = Guid.NewGuid();
             }
 
@@ -64,7 +60,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
                 return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
 
-            _logger.LogInformation("{CorrelationGuid} Get AdviserDetail By Id C# HTTP trigger function  processed a request. By Touchpoint: {touchpointId}", correlationId,touchpointId);
+            _logger.LogTrace("{CorrelationGuid} Get AdviserDetail By Id C# HTTP trigger function  processed a request. By Touchpoint: {touchpointId}", correlationId,touchpointId);
 
 
             if (!Guid.TryParse(adviserDetailId, out var adviserDetailGuid))
@@ -74,7 +70,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
             }
 
 
-            _logger.LogInformation("{CorrelationGuid} Attempting to get Adviser Detail {AdviserDetailGuid}", correlationId,adviserDetailId);
+            _logger.LogTrace("{CorrelationGuid} Attempting to get Adviser Detail {AdviserDetailGuid}", correlationId,adviserDetailId);
             var AdviserDetail = await _AdviserDetailGetService.GetAdviserDetailAsync(adviserDetailGuid);
 
             if (AdviserDetail == null)
@@ -83,7 +79,7 @@ namespace NCS.DSS.AdviserDetail.GetAdviserDetailByIdHttpTrigger.Function
                 return new NoContentResult();
             }
 
-            _logger.LogInformation("Function {FunctionName} has finished invoking", functionName);
+            _logger.LogTrace("Function {FunctionName} has finished invoking", functionName);
 
             return new JsonResult(AdviserDetail, new JsonSerializerOptions())
                 {
