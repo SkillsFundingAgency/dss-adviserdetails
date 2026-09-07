@@ -87,7 +87,7 @@ namespace NCS.DSS.AdviserDetail.PatchAdviserDetailHttpTrigger.Function
             catch (Newtonsoft.Json.JsonException ex)
             {
                 _logger.LogError(ex,"{CorrelationGuid} Unable to retrieve body from req {Exception}", correlationGuid, ex.Message);
-                return new UnprocessableEntityObjectResult(_convertToDynamic.ExcludeProperty(ex, ["TargetSite"]));
+                return new UnprocessableEntityObjectResult(_convertToDynamic.ExcludeProperty(ex, ["TargetSite", "StackTrace"]));
             }
 
             if (adviserDetailPatchRequest == null)
